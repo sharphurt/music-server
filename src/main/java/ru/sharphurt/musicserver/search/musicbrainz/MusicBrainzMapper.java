@@ -4,9 +4,11 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import ru.sharphurt.musicserver.search.dto.RawSearchResultDto;
 import ru.sharphurt.musicserver.search.dto.TrackDto;
+import ru.sharphurt.musicserver.util.Utils;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -17,6 +19,9 @@ import java.util.List;
 public class MusicBrainzMapper {
 
     private final ObjectMapper objectMapper;
+
+    @Value("${server-base-url}")
+    private String serverBaseUrl;
 
     public RawSearchResultDto<TrackDto> mapToTrackSearchDtos(String responseBody, String query, long limit) {
         List<TrackDto> dtos = new ArrayList<>();
@@ -45,10 +50,10 @@ public class MusicBrainzMapper {
         String mbid = recording.path("id").asText(null);
         String title = recording.path("title").asText("Unknown Title");
 
-        String authorName = "Unknown Artist";
+        String artistName = "Unknown Artist";
         JsonNode artistCredit = recording.path("artist-credit");
         if (artistCredit.isArray() && !artistCredit.isEmpty()) {
-            authorName = artistCredit.get(0).path("name").asText("Unknown Artist");
+            artistName = artistCredit.get(0).path("name").asText("Unknown Artist");
         }
 
         String albumName = "Unknown Album";
@@ -61,7 +66,7 @@ public class MusicBrainzMapper {
 
             String releaseId = firstRelease.path("id").asText(null);
             if (releaseId != null) {
-                imageUrl = String.format("https://coverartarchive.org/release/%s/front", releaseId);
+                imageUrl = Utils.buildProxyUrl(String.format("https://coverartarchive.org/release/%s/front", releaseId), serverBaseUrl);
             }
         }
 
@@ -73,15 +78,18 @@ public class MusicBrainzMapper {
             }
         }
 
+        List<String> imageUrls = imageUrl != null ? List.of(imageUrl) : List.of();
+
         return TrackDto
                 .builder()
                 .title(title)
                 .genres(genres)
-                .imageUrl(imageUrl)
+                .imageUrls(imageUrls)
                 .mbid(mbid)
-                .artistName(authorName)
+                .artistName(artistName)
                 .albumName(albumName)
-                .playcount(0L)
+                .downloadUrl(Utils.buildDownloadUrl(title, artistName, albumName, serverBaseUrl))
+                .playcounts(0L)
                 .build();
     }
 }

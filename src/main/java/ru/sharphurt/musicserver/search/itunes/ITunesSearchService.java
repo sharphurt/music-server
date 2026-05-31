@@ -14,7 +14,7 @@ import ru.sharphurt.musicserver.search.dto.TrackDto;
 
 import java.net.URI;
 
-import static ru.sharphurt.musicserver.config.GlobalConstants.*;
+import static ru.sharphurt.musicserver.util.GlobalConstants.*;
 
 @Slf4j
 @Service

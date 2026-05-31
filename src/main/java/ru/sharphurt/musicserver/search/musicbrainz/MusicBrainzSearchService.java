@@ -12,8 +12,8 @@ import ru.sharphurt.musicserver.search.dto.RawSearchResultDto;
 import ru.sharphurt.musicserver.search.dto.SearchRequestDto;
 import ru.sharphurt.musicserver.search.dto.TrackDto;
 
-import static ru.sharphurt.musicserver.config.GlobalConstants.MUSICBRAINZ_BASE_URL;
-import static ru.sharphurt.musicserver.config.GlobalConstants.USER_AGENT;
+import static ru.sharphurt.musicserver.util.GlobalConstants.MUSICBRAINZ_BASE_URL;
+import static ru.sharphurt.musicserver.util.GlobalConstants.USER_AGENT;
 
 @Slf4j
 @Service

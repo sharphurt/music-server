@@ -6,10 +6,10 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
-import org.springframework.web.util.UriComponentsBuilder;
 import ru.sharphurt.musicserver.search.dto.RawSearchResultDto;
 import ru.sharphurt.musicserver.search.dto.SearchRequestDto;
 import ru.sharphurt.musicserver.search.dto.TrackDto;
+import ru.sharphurt.musicserver.util.Utils;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
@@ -59,27 +59,29 @@ public class ITunesMapper {
         String title = node.path("trackName").asText("");
         String artist = node.path("artistName").asText("");
         String album = node.path("collectionName").asText("");
-        String genre = node.path("primaryGenreName").asText("");
         LocalDateTime releaseDate = parseDateTimeOrNull(node.path("releaseDate").asText(""));
         long durationMs = node.path("trackTimeMillis").asLong(0);
         long iTunesId = node.path("trackId").asLong(0);
+        String genre = node.path("primaryGenreName").asText(null);
+        List<String> genres = genre != null ? List.of(genre) : List.of();
 
-        String rawImageUrl = node.path("artworkUrl100").asText(null);
-        String highResImageUrl = (rawImageUrl != null)
-                ? rawImageUrl.replace("100x100bb.jpg", "600x600bb.jpg")
-                : null;
+        String previewUrl = Utils.buildProxyUrl(node.path("previewUrl").asText(), serverBaseUrl);
+        String rawImageUrl = Utils.buildProxyUrl(node.path("artworkUrl100")
+                .asText("")
+                .replace("100x100bb.jpg", "600x600bb.jpg"), serverBaseUrl);
+        List<String> imageUrls = rawImageUrl != null ? List.of(rawImageUrl) : List.of();
 
         return TrackDto
                 .builder()
                 .iTunesId(iTunesId)
                 .title(title)
-                .genres(List.of(genre))
-                .imageUrl(highResImageUrl)
+                .genres(genres)
+                .imageUrls(imageUrls)
                 .artistName(artist)
                 .albumName(album)
-                .playcount(0L)
+                .playcounts(0L)
                 .duration(durationMs)
-                .downloadUrl(buildDownloadUrl(title, artist, album))
+                .previewUrl(previewUrl)
                 .releaseDate(releaseDate)
                 .build();
     }
@@ -92,12 +94,4 @@ public class ITunesMapper {
         }
     }
 
-    private String buildDownloadUrl(String title, String artist, String album) {
-        return UriComponentsBuilder.fromUriString(serverBaseUrl)
-                .path("/download")
-                .queryParam("name", title)
-                .queryParam("artist", artist)
-                .queryParam("album", album)
-                .toUriString();
-    }
 }

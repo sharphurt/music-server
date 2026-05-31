@@ -4,7 +4,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.util.UriComponentsBuilder;
 import ru.sharphurt.musicserver.search.dto.SearchRequestDto;
 
-import static ru.sharphurt.musicserver.config.GlobalConstants.ITUNES_BASE_URL;
+import static ru.sharphurt.musicserver.util.GlobalConstants.ITUNES_BASE_URL;
 
 @Component
 public class ITunesQueryBuilder {

@@ -1,15 +1,14 @@
 package ru.sharphurt.musicserver.search.dto;
 
-import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
+import lombok.experimental.SuperBuilder;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
 
 @Getter
 @Setter
+@SuperBuilder
 public class TrackDto extends BaseEntityDto {
 
     private String artistName;
@@ -22,25 +21,7 @@ public class TrackDto extends BaseEntityDto {
 
     private LocalDateTime releaseDate;
 
-    @Builder
-    public TrackDto(Long iTunesId,
-                    String title,
-                    List<String> genres,
-                    String imageUrl,
-                    String downloadUrl,
-                    String mbid,
-                    String artistName,
-                    String albumName,
-                    long duration,
-                    long playcount,
-                    LocalDateTime releaseDate) {
-        super(iTunesId, title, genres, new ArrayList<>(List.of(imageUrl)), downloadUrl, mbid);
-        this.artistName = artistName;
-        this.albumName = albumName;
-        this.playcounts = playcount;
-        this.duration = duration;
-        this.releaseDate = releaseDate;
-    }
+    private String previewUrl;
 
     @Override
     public String toString() {

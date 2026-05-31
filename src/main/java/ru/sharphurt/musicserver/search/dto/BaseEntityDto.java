@@ -1,23 +1,22 @@
 package ru.sharphurt.musicserver.search.dto;
 
-import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
+import lombok.experimental.SuperBuilder;
 
-import java.util.ArrayList;
 import java.util.List;
 
 @Getter
 @Setter
-@AllArgsConstructor
+@SuperBuilder
 public class BaseEntityDto {
-    private long itunesId;
+    private long iTunesId;
 
     private String title;
 
     private List<String> genres;
 
-    private ArrayList<String> imageUrls;
+    private List<String> imageUrls;
 
     private String downloadUrl;
 
