@@ -1,0 +1,14 @@
+#file: noinspection YAMLSchemaValidation
+spring:
+  datasource:
+    url: jdbc:mysql://127.0.0.1:5432/music?useSSL=false&verifyServerCertificate=false&allowPublicKeyRetrieval=true
+    username: sharphurt
+    password: password
+    driver-class-name: org.postgresql.Driver
+
+lastfm:
+  url: https://ws.audioscrobbler.com/2.0
+  image-base-url: https://lastfm.freetls.fastly.net
+  apikey: ${LASTFM_API_KEY}
+
+server-base-url: ${SERVER_BASE_URL:http://localhost:8080}
