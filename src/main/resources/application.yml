@@ -11,4 +11,10 @@ lastfm:
   image-base-url: https://lastfm.freetls.fastly.net
   apikey: ${LASTFM_API_KEY}
 
+slskd:
+  url: ${SLSKD_BASE_URL:http://localhost:5030}
+  api-key: ${SLSKD_SECRET_API_KEY:SuperSecretKey123456789!}
+
 server-base-url: ${SERVER_BASE_URL:http://localhost:8080}
+
+

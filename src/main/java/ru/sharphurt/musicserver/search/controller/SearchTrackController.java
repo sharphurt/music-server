@@ -9,7 +9,7 @@ import ru.sharphurt.musicserver.search.dto.TrackDto;
 import ru.sharphurt.musicserver.search.service.SearchTrackService;
 
 @RestController
-@RequestMapping("search")
+@RequestMapping("/api/search")
 @CrossOrigin(origins = "*", maxAge = 3600)
 @Slf4j
 @RequiredArgsConstructor
