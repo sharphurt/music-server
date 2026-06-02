@@ -9,7 +9,7 @@ spring:
 lastfm:
   url: https://ws.audioscrobbler.com/2.0
   image-base-url: https://lastfm.freetls.fastly.net
-  apikey: ${LASTFM_API_KEY}
+
 
 slskd:
   url: ${SLSKD_BASE_URL:http://localhost:5030}

@@ -1,48 +1,57 @@
 package ru.sharphurt.musicserver.soulseek.service;
 
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.http.MediaType;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
-import org.springframework.web.client.RestClient;
+import ru.sharphurt.musicserver.dto.TrackDto;
+import ru.sharphurt.musicserver.itunes.service.ITunesSearchService;
+import ru.sharphurt.musicserver.soulseek.dto.SoulseekSearchResultDto;
+import ru.sharphurt.musicserver.soulseek.dto.SoulseekSearchTaskDto;
+import ru.sharphurt.musicserver.util.DataClearingUtils;
 
-import java.util.HashMap;
-import java.util.Map;
+import java.util.List;
+import java.util.Objects;
+import java.util.Optional;
 import java.util.UUID;
 
+@Slf4j
 @Service
+@RequiredArgsConstructor
 public class SoulseekSearchService {
 
-    private final RestClient restClient;
+    private final SoulseekRestService restService;
 
-    public SoulseekSearchService(@Value("${slskd.url}") String slskdBaseUrl,
-                                 @Value("${slskd.api-key}") String slskdApiKey) {
-        this.restClient = RestClient.builder()
-                .baseUrl(slskdBaseUrl)
-                .defaultHeader("X-API-Key", slskdApiKey)
-                .defaultHeader("Content-Type", MediaType.APPLICATION_JSON_VALUE)
-                .build();
+    private final ITunesSearchService iTunesSearchService;
+
+    public List<SoulseekSearchTaskDto> initiateSearch(long trackId) {
+        TrackDto trackDto = iTunesSearchService.searchTrackById(trackId);
+
+        return trackDto.getTitleAliases().stream()
+                .map(alias -> trackDto.getArtistName() + " " + alias)
+                .map(DataClearingUtils::normalizeString)
+                .map(this::createSearchTask)
+                .filter(Objects::nonNull)
+                .toList();
     }
 
-    public String initiateSearch(String query) {
-        String searchId = UUID.randomUUID().toString();
+    public SoulseekSearchTaskDto createSearchTask(String query) {
+        UUID searchId = UUID.randomUUID();
+        boolean isSuccessful = restService.postSearchTask(searchId, query);
+        if (!isSuccessful) {
+            log.info("Задача на поиск для запроса {} не была создана, будет пропущена", query);
+            return null;
+        }
 
-        Map<String, Object> body = new HashMap<>();
-        body.put("id", searchId);
-        body.put("searchText", query);
-
-        restClient.post()
-                .uri("/api/v0/searches")
-                .body(body)
-                .retrieve()
-                .toBodilessEntity();
-
-        return searchId;
+        return new SoulseekSearchTaskDto(query, searchId);
     }
 
-    public String fetchSearchResults(String searchId) {
-        return restClient.get()
-                .uri("/api/v0/searches/{id}?includeResponses=true", searchId)
-                .retrieve()
-                .body(String.class);
+    public SoulseekSearchResultDto fetchSearchResults(String searchId) {
+        Optional<SoulseekSearchResultDto> searchResultDto = restService.getSearchResult(UUID.fromString(searchId));
+        if (searchResultDto.isEmpty()) {
+            log.info("Не найдено задачи на поиск uuid {}", searchResultDto);
+            throw new RuntimeException("Не найдено задачи на поиск uuid " + searchId);
+        }
+
+        return searchResultDto.get();
     }
 }

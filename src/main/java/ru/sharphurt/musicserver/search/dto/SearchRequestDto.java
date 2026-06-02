@@ -1,10 +1,11 @@
 package ru.sharphurt.musicserver.search.dto;
 
-import lombok.Data;
+import ru.sharphurt.musicserver.dto.EntityType;
 
-@Data
-public class SearchRequestDto {
-    private String query;
-    private long limit;
-    private long page;
+public record SearchRequestDto(
+        String query,
+        long limit,
+        long page,
+        EntityType type
+) {
 }

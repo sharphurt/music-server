@@ -1,9 +1,11 @@
 package ru.sharphurt.musicserver.search;
 
-import ru.sharphurt.musicserver.search.dto.RawSearchResultDto;
+import ru.sharphurt.musicserver.dto.TrackDto;
 import ru.sharphurt.musicserver.search.dto.SearchRequestDto;
-import ru.sharphurt.musicserver.search.dto.TrackDto;
+import ru.sharphurt.musicserver.search.dto.SearchResponseDto;
 
 public interface SearchProvider {
-    RawSearchResultDto<TrackDto> searchTracks(SearchRequestDto request);
+    SearchResponseDto<TrackDto> searchTracksBy(SearchRequestDto request);
+
+    TrackDto searchTrackById(long id);
 }
