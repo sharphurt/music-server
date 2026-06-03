@@ -24,8 +24,8 @@ public class SoulseekSearchController {
     }
 
     @GetMapping("/search/results")
-    public ResponseEntity<List<MatchCandidateDto>> getSearchResults(@RequestParam Long trackId) {
-        List<MatchCandidateDto> results = searchService.fetchSearchResults(trackId);
+    public ResponseEntity<List<MatchCandidateDto>> getSearchResults(@RequestParam Long trackId, @RequestParam(defaultValue = "200") Integer maxResults) {
+        List<MatchCandidateDto> results = searchService.fetchSearchResults(trackId, maxResults);
         return ResponseEntity.ok(results);
     }
 }

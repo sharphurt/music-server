@@ -28,7 +28,6 @@ public class SoulseekSearchService {
                 .flatMap(alias -> Stream.of(
                         trackDto.getArtistName() + " " + alias,
                         alias + " " + trackDto.getArtistName(),
-                        trackDto.getArtistName(),
                         alias))
                 .map(e -> DataClearingUtils.normalizeString(e).toLowerCase())
                 .filter(e -> !e.isEmpty())
@@ -55,7 +54,7 @@ public class SoulseekSearchService {
         return new SoulseekSearchTaskDto(trackDto.getITunesId(), query, searchId);
     }
 
-    public List<MatchCandidateDto> fetchSearchResults(long trackId) {
+    public List<MatchCandidateDto> fetchSearchResults(long trackId, int maxResults) {
         TrackDto trackDto = iTunesSearchService.searchTrackById(trackId);
         List<SoulseekSearchTaskDto> tasksData = cacheService.getAllForTrack(trackId);
 
@@ -93,6 +92,9 @@ public class SoulseekSearchService {
             }
         }
 
-        return scoringService.matchAndSort(trackDto, aggregatedFiles.values());
+        return scoringService.matchAndSort(trackDto, aggregatedFiles.values())
+                .stream()
+                .limit(maxResults)
+                .toList();
     }
 }

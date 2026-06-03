@@ -4,9 +4,8 @@ public record MatchCandidateDto(
         String username,
         String filename,
         double similarityScore,
-        double finalScore,
-        int calculatedKbps,
-        boolean isFakeFlac,
+        int length,
+        double kbps,
         double sizeMb
 ) {
 }

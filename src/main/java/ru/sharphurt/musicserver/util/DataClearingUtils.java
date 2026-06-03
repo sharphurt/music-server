@@ -61,12 +61,12 @@ public class DataClearingUtils {
         }
 
         String[] tokens = MULTIPLE_SPACES_PATTERN.split(filename.trim());
-        log.info("\tSplitted to tokens: [{}]", String.join(", ", tokens));
+        log.trace("\tSplitted to tokens: [{}]", String.join(", ", tokens));
         List<String> filtered = Arrays.stream(tokens)
                 .filter(t -> !t.isEmpty())
                 .filter(t -> !STOP_WORDS.contains(t))
                 .toList();
-        log.info("\tFiltered tokens: [{}]", String.join(", ", filtered));
+        log.trace("\tFiltered tokens: [{}]", String.join(", ", filtered));
 
         return String.join(" ", filtered);
     }

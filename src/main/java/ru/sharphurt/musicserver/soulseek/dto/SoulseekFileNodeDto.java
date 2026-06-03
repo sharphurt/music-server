@@ -10,8 +10,8 @@ public class SoulseekFileNodeDto {
     private int length;
     private int code;
     private boolean isLocked;
-    private Integer bitDepth;
-    private Integer sampleRate;
-    private Integer bitRate;
+    private int bitDepth;
+    private int sampleRate;
+    private int bitRate;
     private String username;
 }
