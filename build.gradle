@@ -30,6 +30,8 @@ dependencies {
     implementation 'de.u-mass:lastfm-java:0.1.2'
     implementation 'com.ibm.icu:icu4j:78.3'
 
+    implementation 'org.springframework.boot:spring-boot-starter-data-redis'
+
     runtimeOnly 'org.postgresql:postgresql'
     annotationProcessor 'org.projectlombok:lombok'
     // testImplementation 'org.springframework.boot:spring-boot-starter-data-jdbc-test'

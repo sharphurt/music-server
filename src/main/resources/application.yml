@@ -1,10 +1,10 @@
 #file: noinspection YAMLSchemaValidation
 spring:
-  datasource:
-    url: jdbc:mysql://127.0.0.1:5432/music?useSSL=false&verifyServerCertificate=false&allowPublicKeyRetrieval=true
-    username: sharphurt
-    password: password
-    driver-class-name: org.postgresql.Driver
+  data:
+    redis:
+      host: ${REDIS_HOST:127.0.0.1}
+      port: ${REDIS_PORT:6379}
+      password: ${REDIS_PASSWORD:password}
 
 lastfm:
   url: https://ws.audioscrobbler.com/2.0
@@ -17,4 +17,6 @@ slskd:
 
 server-base-url: ${SERVER_BASE_URL:http://localhost:8080}
 
-
+logging:
+  level:
+    ru.sharphurt.musicserver: info

@@ -2,4 +2,5 @@ package ru.sharphurt.musicserver.soulseek.dto;
 
 import java.util.UUID;
 
-public record SoulseekSearchTaskDto(String query, UUID uuid) {}
+public record SoulseekSearchTaskDto(long trackId, String query, UUID uuid) {
+}

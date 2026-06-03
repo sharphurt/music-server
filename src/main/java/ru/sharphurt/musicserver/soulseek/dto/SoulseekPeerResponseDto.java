@@ -13,7 +13,7 @@ public class SoulseekPeerResponseDto {
     private int queueLength;
     private boolean hasFreeUploadSlot;
     private int lockedFileCount;
-    private List<String> lockedFiles;
+    private List<SoulseekFileNodeDto> lockedFiles;
     private List<SoulseekFileNodeDto> files;
 
 }

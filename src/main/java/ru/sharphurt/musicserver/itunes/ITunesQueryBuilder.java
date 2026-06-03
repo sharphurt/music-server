@@ -30,6 +30,7 @@ public class ITunesQueryBuilder {
                 .queryParam("entity", ITunesEntityType.SONG.getApiName())
                 .queryParam("limit", request.limit())
                 .queryParam("offset", offset)
+                .encode()
                 .build()
                 .toUri();
     }
@@ -44,6 +45,9 @@ public class ITunesQueryBuilder {
             builder.queryParam("country", country);
         }
 
-        return builder.build().toUri();
+        return builder
+                .encode()
+                .build()
+                .toUri();
     }
 }

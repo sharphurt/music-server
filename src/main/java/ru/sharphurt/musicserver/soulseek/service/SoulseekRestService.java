@@ -55,13 +55,13 @@ public class SoulseekRestService {
                     .body(SoulseekSearchResultDto.class);
 
             if (searchResultDto == null) {
-                log.error("Не найдено результатов поиска по uuid {}", uuid);
+                log.error("Не найдено таски на поиск по uuid {}", uuid);
                 return Optional.empty();
             }
 
             for (SoulseekPeerResponseDto responseDto : searchResultDto.getResponses()) {
                 for (SoulseekFileNodeDto fileNodeDto : responseDto.getFiles()) {
-                    fileNodeDto.setUsername(fileNodeDto.getUsername());
+                    fileNodeDto.setUsername(responseDto.getUsername());
                 }
             }
 

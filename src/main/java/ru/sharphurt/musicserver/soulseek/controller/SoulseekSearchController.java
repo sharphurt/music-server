@@ -4,7 +4,7 @@ package ru.sharphurt.musicserver.soulseek.controller;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import ru.sharphurt.musicserver.soulseek.dto.SoulseekSearchResultDto;
+import ru.sharphurt.musicserver.soulseek.dto.MatchCandidateDto;
 import ru.sharphurt.musicserver.soulseek.dto.SoulseekSearchTaskDto;
 import ru.sharphurt.musicserver.soulseek.service.SoulseekSearchService;
 
@@ -23,9 +23,9 @@ public class SoulseekSearchController {
         return ResponseEntity.ok(searchTasks);
     }
 
-    @GetMapping("/search/{searchId}/results")
-    public ResponseEntity<SoulseekSearchResultDto> getSearchResults(@PathVariable String searchId) {
-        SoulseekSearchResultDto results = searchService.fetchSearchResults(searchId);
+    @GetMapping("/search/results")
+    public ResponseEntity<List<MatchCandidateDto>> getSearchResults(@RequestParam Long trackId) {
+        List<MatchCandidateDto> results = searchService.fetchSearchResults(trackId);
         return ResponseEntity.ok(results);
     }
 }

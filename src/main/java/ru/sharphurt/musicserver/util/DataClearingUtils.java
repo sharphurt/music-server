@@ -11,8 +11,8 @@ import java.util.regex.Pattern;
 @Service
 @Slf4j
 public class DataClearingUtils {
-    private static final Pattern EXTENSION_PATTERN = Pattern.compile("\\.[a-zA-Z0-9]+$");
-    private static final Pattern PUNCTUATION_PATTERN = Pattern.compile("[^\\p{L}\\p{N}]+");
+//    private static final Pattern EXTENSION_PATTERN = Pattern.compile("\\.[a-zA-Z0-9]+$");
+//    private static final Pattern PUNCTUATION_PATTERN = Pattern.compile("[^\\p{L}\\p{N}]+");
     private static final Pattern MULTIPLE_SPACES_PATTERN = Pattern.compile("\\s+");
 
     private static final Set<String> STOP_WORDS = Set.of(
@@ -21,7 +21,7 @@ public class DataClearingUtils {
             "web", "rip", "kbps", "flac", "mp3", "m4a", "aac", "opus", "ogg", "wav",
             "official", "audio", "video", "single", "ep", "album", "soundtrack", "ost",
             "cd", "vinyl", "lossless", "hires", "bit", "khz", "hz",
-            "pmedia", "choko",
+            "pmedia", "choko", "feat",
 
             // дополнительные форматы/кодеки
             "wma", "ape", "alac", "aiff", "aif", "dsf", "dff", "mka", "tak", "tta",
@@ -60,17 +60,11 @@ public class DataClearingUtils {
             return "";
         }
 
-        log.info("Normaizing filename: {}", filename);
-        String noExtension = EXTENSION_PATTERN.matcher(filename).replaceAll("");
-        log.info("\tRemoved extension: {}", noExtension);
-        String alphaNumOnly = PUNCTUATION_PATTERN.matcher(noExtension).replaceAll(" ");
-        log.info("\tAlphanumeric string: {}", alphaNumOnly);
-        String[] tokens = MULTIPLE_SPACES_PATTERN.split(alphaNumOnly.trim());
+        String[] tokens = MULTIPLE_SPACES_PATTERN.split(filename.trim());
         log.info("\tSplitted to tokens: [{}]", String.join(", ", tokens));
         List<String> filtered = Arrays.stream(tokens)
                 .filter(t -> !t.isEmpty())
                 .filter(t -> !STOP_WORDS.contains(t))
-                .filter(t -> !t.matches("\\d{2,4}"))
                 .toList();
         log.info("\tFiltered tokens: [{}]", String.join(", ", filtered));
 
