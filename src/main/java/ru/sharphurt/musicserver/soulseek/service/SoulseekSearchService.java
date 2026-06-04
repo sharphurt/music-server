@@ -24,17 +24,7 @@ public class SoulseekSearchService {
 
     public List<SoulseekSearchTaskDto> initiateSearch(long trackId) {
         TrackDto trackDto = iTunesSearchService.searchTrackById(trackId);
-        List<SoulseekSearchTaskDto> searchTasks = trackDto.getTitleAliases().stream()
-                .flatMap(alias -> Stream.of(
-                        trackDto.getArtistName() + " " + alias,
-                        alias + " " + trackDto.getArtistName(),
-                        alias))
-                .map(e -> DataClearingUtils.normalizeString(e).toLowerCase())
-                .filter(e -> !e.isEmpty())
-                .distinct()
-                .map(query -> createSearchTask(trackDto, query))
-                .filter(Objects::nonNull)
-                .toList();
+        List<SoulseekSearchTaskDto> searchTasks = trackDto.getTitleAliases().stream().flatMap(alias -> Stream.of(trackDto.getArtistName() + " " + alias, alias + " " + trackDto.getArtistName(), alias)).map(e -> DataClearingUtils.normalizeString(e).toLowerCase()).filter(e -> !e.isEmpty()).distinct().map(query -> createSearchTask(trackDto, query)).filter(Objects::nonNull).toList();
 
         for (SoulseekSearchTaskDto searchTask : searchTasks) {
             cacheService.save(searchTask);
@@ -54,12 +44,17 @@ public class SoulseekSearchService {
         return new SoulseekSearchTaskDto(trackDto.getITunesId(), query, searchId);
     }
 
-    public List<MatchCandidateDto> fetchSearchResults(long trackId, int maxResults) {
+    public List<SoulseekFileScoreDto> fetchSearchResults(long trackId, int maxResults) {
         TrackDto trackDto = iTunesSearchService.searchTrackById(trackId);
+        List<SoulseekFileNodeDto> filesData = collectFiles(trackId);
+
+        return scoringService.matchAndSort(trackDto, filesData).stream().limit(maxResults).toList();
+    }
+
+    private List<SoulseekFileNodeDto> collectFiles(long trackId) {
         List<SoulseekSearchTaskDto> tasksData = cacheService.getAllForTrack(trackId);
 
         if (tasksData == null || tasksData.isEmpty()) {
-
             log.info("Для трека id={} нет активных задач на поиск", trackId);
             return List.of();
         }
@@ -92,9 +87,6 @@ public class SoulseekSearchService {
             }
         }
 
-        return scoringService.matchAndSort(trackDto, aggregatedFiles.values())
-                .stream()
-                .limit(maxResults)
-                .toList();
+        return new ArrayList<>(aggregatedFiles.values());
     }
 }

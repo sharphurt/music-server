@@ -14,4 +14,6 @@ public class SoulseekFileNodeDto {
     private int sampleRate;
     private int bitRate;
     private String username;
+    private long uploadSpeed;
+    private int kbps;
 }
