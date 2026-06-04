@@ -27,19 +27,19 @@ public class AliasesEnrichmentService implements EnrichmentService<TrackDto> {
         Set<String> trackNameAliases = new HashSet<>();
         Set<String> artistNameAliases = new HashSet<>();
 
-
         log.info("Creating aliases for track {}", dto);
 
-        executor.callForMultipleArgumentsAsync(ALIAS_LOCALES, c -> findTrackInCountry(dto, c)).stream()
-                .filter(Optional::isPresent)
-                .map(Optional::get)
-                .forEach(t -> {
-                    trackNameAliases.add(t.trackName().toLowerCase());
-                    artistNameAliases.add(t.artistName().toLowerCase());
-                });
+        executor.callForMultipleArgumentsAsync(ALIAS_LOCALES, c -> findTrackInCountry(dto, c))
+            .stream()
+            .filter(Optional::isPresent)
+            .map(Optional::get)
+            .forEach(t -> {
+                trackNameAliases.add(t.trackName().toLowerCase());
+                artistNameAliases.add(t.artistName().toLowerCase());
+            });
 
         return dto.addArtistAliases(artistNameAliases)
-                .addTitleAliases(trackNameAliases);
+            .addTitleAliases(trackNameAliases);
     }
 
     private Optional<ITunesTrackDto> findTrackInCountry(TrackDto trackDto, String country) {

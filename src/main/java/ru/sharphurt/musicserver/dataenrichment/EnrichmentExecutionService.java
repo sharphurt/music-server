@@ -29,7 +29,8 @@ public class EnrichmentExecutionService<T> {
             try {
                 entity = service.enrich(entity);
             } catch (Exception e) {
-                log.error("Ошибка при обогащении сущности сервисом: {}", service.getClass().getSimpleName(), e);
+                log.error("Ошибка при обогащении сущности сервисом: {}",
+                    service.getClass().getSimpleName(), e);
             }
         }
 

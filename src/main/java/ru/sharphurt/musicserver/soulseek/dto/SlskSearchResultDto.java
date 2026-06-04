@@ -7,7 +7,8 @@ import java.util.List;
 import java.util.UUID;
 
 @Data
-public class SoulseekSearchResultDto {
+public class SlskSearchResultDto {
+
     private UUID id;
     private String searchText;
     private String state;
@@ -18,5 +19,5 @@ public class SoulseekSearchResultDto {
     private int lockedFileCount;
     private Instant startedAt;
     private Instant endedAt;
-    private List<SoulseekPeerResponseDto> responses;
+    private List<SlskPeerResponseDto> responses;
 }

@@ -44,12 +44,12 @@ public class ITunesSearchService implements SearchProvider {
         trackCacheService.saveAll(enrichedTracks);
 
         return SearchResponseDto.withContent(
-                request.type(),
-                enrichedTracks,
-                startIndex + response.get().resultCount(),
-                request.query(),
-                request.limit(),
-                request.page()
+            request.type(),
+            enrichedTracks,
+            startIndex + response.get().resultCount(),
+            request.query(),
+            request.limit(),
+            request.page()
         );
     }
 
@@ -68,7 +68,8 @@ public class ITunesSearchService implements SearchProvider {
             throw new RuntimeException("Трек с id " + id + " не найден");
         }
 
-        TrackDto trackDto = trackEnrichmentExecutionService.enrich(mapper.mapToTrackDto(track.get()));
+        TrackDto trackDto = trackEnrichmentExecutionService.enrich(
+            mapper.mapToTrackDto(track.get()));
         trackCacheService.save(trackDto);
         return trackDto;
     }

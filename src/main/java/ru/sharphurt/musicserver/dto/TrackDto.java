@@ -11,6 +11,7 @@ import java.util.Set;
 @Builder
 @Data
 public class TrackDto {
+
     private Long iTunesId;
     private String title;
     private List<String> genres;

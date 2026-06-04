@@ -7,10 +7,11 @@ import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.serializer.JacksonJsonRedisSerializer;
 import org.springframework.data.redis.serializer.StringRedisSerializer;
 import ru.sharphurt.musicserver.dto.TrackDto;
-import ru.sharphurt.musicserver.soulseek.dto.SoulseekSearchTaskDto;
+import ru.sharphurt.musicserver.soulseek.dto.SlskSearchTaskDto;
 
 @Configuration
 public class RedisConfig {
+
     @Bean
     public RedisTemplate<String, TrackDto> trackRedisTemplate(RedisConnectionFactory factory) {
         RedisTemplate<String, TrackDto> template = new RedisTemplate<>();
@@ -21,12 +22,13 @@ public class RedisConfig {
     }
 
     @Bean
-    public RedisTemplate<String, SoulseekSearchTaskDto> soulseekTaskRedisTemplate(RedisConnectionFactory factory) {
-        RedisTemplate<String, SoulseekSearchTaskDto> template = new RedisTemplate<>();
+    public RedisTemplate<String, SlskSearchTaskDto> soulseekTaskRedisTemplate(
+        RedisConnectionFactory factory) {
+        RedisTemplate<String, SlskSearchTaskDto> template = new RedisTemplate<>();
         template.setConnectionFactory(factory);
 
         var stringSerializer = new StringRedisSerializer();
-        var jsonSerializer = new JacksonJsonRedisSerializer<>(SoulseekSearchTaskDto.class);
+        var jsonSerializer = new JacksonJsonRedisSerializer<>(SlskSearchTaskDto.class);
 
         template.setKeySerializer(stringSerializer);
         template.setValueSerializer(jsonSerializer);

@@ -5,7 +5,7 @@ import lombok.Data;
 import java.util.List;
 
 @Data
-public class SoulseekPeerResponseDto {
+public class SlskPeerResponseDto {
     private String username;
     private int token;
     private int fileCount;
@@ -13,7 +13,7 @@ public class SoulseekPeerResponseDto {
     private int queueLength;
     private boolean hasFreeUploadSlot;
     private int lockedFileCount;
-    private List<SoulseekFileNodeDto> lockedFiles;
-    private List<SoulseekFileNodeDto> files;
+    private List<SlskFileNodeDto> lockedFiles;
+    private List<SlskFileNodeDto> files;
 
 }

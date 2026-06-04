@@ -3,7 +3,7 @@ package ru.sharphurt.musicserver.soulseek.dto;
 import lombok.Data;
 
 @Data
-public class SoulseekFileNodeDto {
+public class SlskFileNodeDto {
     private String filename;
     private String extension;
     private long size;

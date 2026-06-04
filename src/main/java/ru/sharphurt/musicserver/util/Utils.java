@@ -12,17 +12,18 @@ public class Utils {
         }
 
         return UriComponentsBuilder.fromUriString(serverBaseUrl)
-                .path(GlobalConstants.PROXY_ENDPOINT)
-                .queryParam("url", url)
-                .toUriString();
+            .path(GlobalConstants.PROXY_ENDPOINT)
+            .queryParam("url", url)
+            .toUriString();
     }
 
-    public static String buildDownloadUrl(String title, String artist, String album, String serverBaseUrl) {
+    public static String buildDownloadUrl(String title, String artist, String album,
+        String serverBaseUrl) {
         return UriComponentsBuilder.fromUriString(serverBaseUrl)
-                .path(GlobalConstants.DOWNLOAD_ENDPOINT)
-                .queryParam("name", title)
-                .queryParam("artist", artist)
-                .queryParam("album", album)
-                .toUriString();
+            .path(GlobalConstants.DOWNLOAD_ENDPOINT)
+            .queryParam("name", title)
+            .queryParam("artist", artist)
+            .queryParam("album", album)
+            .toUriString();
     }
 }

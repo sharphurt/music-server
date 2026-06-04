@@ -15,25 +15,30 @@ import java.util.stream.Stream;
 @Slf4j
 @Service
 @RequiredArgsConstructor
-public class SoulseekSearchService {
+public class SlskSearchService {
 
-    private final SoulseekRestService restService;
+    private final SlskRestService restService;
     private final ITunesSearchService iTunesSearchService;
     private final SoulseekTaskCacheService cacheService;
-    private final SoulseekScoringService scoringService;
+    private final SlskScoringService scoringService;
 
-    public List<SoulseekSearchTaskDto> initiateSearch(long trackId) {
+    public List<SlskSearchTaskDto> initiateSearch(long trackId) {
         TrackDto trackDto = iTunesSearchService.searchTrackById(trackId);
-        List<SoulseekSearchTaskDto> searchTasks = trackDto.getTitleAliases().stream().flatMap(alias -> Stream.of(trackDto.getArtistName() + " " + alias, alias + " " + trackDto.getArtistName(), alias)).map(e -> DataClearingUtils.normalizeString(e).toLowerCase()).filter(e -> !e.isEmpty()).distinct().map(query -> createSearchTask(trackDto, query)).filter(Objects::nonNull).toList();
+        List<SlskSearchTaskDto> searchTasks = trackDto.getTitleAliases().stream().flatMap(
+                alias -> Stream.of(trackDto.getArtistName() + " " + alias,
+                    alias + " " + trackDto.getArtistName(), alias))
+            .map(e -> DataClearingUtils.normalizeString(e).toLowerCase()).filter(e -> !e.isEmpty())
+            .distinct().map(query -> createSearchTask(trackDto, query)).filter(Objects::nonNull)
+            .toList();
 
-        for (SoulseekSearchTaskDto searchTask : searchTasks) {
+        for (SlskSearchTaskDto searchTask : searchTasks) {
             cacheService.save(searchTask);
         }
 
         return searchTasks;
     }
 
-    public SoulseekSearchTaskDto createSearchTask(TrackDto trackDto, String query) {
+    public SlskSearchTaskDto createSearchTask(TrackDto trackDto, String query) {
         UUID searchId = UUID.randomUUID();
         boolean isSuccessful = restService.postSearchTask(searchId, query);
         if (!isSuccessful) {
@@ -41,29 +46,30 @@ public class SoulseekSearchService {
             return null;
         }
 
-        return new SoulseekSearchTaskDto(trackDto.getITunesId(), query, searchId);
+        return new SlskSearchTaskDto(trackDto.getITunesId(), query, searchId);
     }
 
-    public List<SoulseekFileScoreDto> fetchSearchResults(long trackId, int maxResults) {
+    public List<SlskFileScoreDto> fetchSearchResults(long trackId, int maxResults) {
         TrackDto trackDto = iTunesSearchService.searchTrackById(trackId);
-        List<SoulseekFileNodeDto> filesData = collectFiles(trackId);
+        List<SlskFileNodeDto> filesData = collectFiles(trackId);
 
         return scoringService.matchAndSort(trackDto, filesData).stream().limit(maxResults).toList();
     }
 
-    private List<SoulseekFileNodeDto> collectFiles(long trackId) {
-        List<SoulseekSearchTaskDto> tasksData = cacheService.getAllForTrack(trackId);
+    private List<SlskFileNodeDto> collectFiles(long trackId) {
+        List<SlskSearchTaskDto> tasksData = cacheService.getAllForTrack(trackId);
 
         if (tasksData == null || tasksData.isEmpty()) {
             log.info("Для трека id={} нет активных задач на поиск", trackId);
             return List.of();
         }
 
-        Map<String, SoulseekFileNodeDto> aggregatedFiles = new HashMap<>();
+        Map<String, SlskFileNodeDto> aggregatedFiles = new HashMap<>();
 
-        for (SoulseekSearchTaskDto task : tasksData) {
+        for (SlskSearchTaskDto task : tasksData) {
             try {
-                Optional<SoulseekSearchResultDto> searchResult = restService.getSearchResult(task.uuid());
+                Optional<SlskSearchResultDto> searchResult = restService.getSearchResult(
+                    task.uuid());
 
                 if (searchResult.isEmpty()) {
                     log.error("Для задачи {} Soulseek ничего не вернул. Пропускаем", task);
@@ -71,14 +77,15 @@ public class SoulseekSearchService {
                     continue;
                 }
 
-                for (SoulseekPeerResponseDto peerResponse : searchResult.get().getResponses()) {
+                for (SlskPeerResponseDto peerResponse : searchResult.get().getResponses()) {
                     if (peerResponse.getFiles() == null) {
                         log.info("Пир {} не вернул файлов. Пропускаем", peerResponse.getUsername());
                         continue;
                     }
 
-                    for (SoulseekFileNodeDto fileNode : peerResponse.getFiles()) {
-                        String uniqueKey = peerResponse.getUsername() + ":" + fileNode.getFilename();
+                    for (SlskFileNodeDto fileNode : peerResponse.getFiles()) {
+                        String uniqueKey =
+                            peerResponse.getUsername() + ":" + fileNode.getFilename();
                         aggregatedFiles.put(uniqueKey, fileNode);
                     }
                 }

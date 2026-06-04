@@ -14,6 +14,7 @@ import ru.sharphurt.musicserver.search.service.SearchTrackService;
 @Slf4j
 @RequiredArgsConstructor
 public class SearchTrackController {
+
     private final SearchTrackService searchService;
 
     @GetMapping("/track")
