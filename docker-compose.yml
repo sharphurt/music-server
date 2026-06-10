@@ -1,5 +1,6 @@
 services:
   app:
+    container_name: music-search-app
     build: .
     ports:
       - "8090:8080"
@@ -7,7 +8,12 @@ services:
       SPRING_PROFILES_ACTIVE: dev
       SPRING_DATA_REDIS_HOST: redis
       SPRING_DATA_REDIS_PORT: 6379
-      SPRING_DATA_REDIS_PASSWORD: ${REDIS_PASSWORD}
+      SPRING_DATA_REDIS_PASSWORD: ${REDIS_PASSWORD:redispassword}
+      REDIS_PASSWORD: ${REDIS_PASSWORD:redispassword}
+      SLSKD_BASE_URL: ${SLSKD_BASE_URL:http://localhost:5030}
+      SLSKD_SECRET_API_KEY: ${SLSKD_SECRET_API_KEY:32941fd6-bf80-40f8-ba74-b6f13f4a0269}
+      SERVER_BASE_URL: ${SERVER_BASE_URL:http://localhost}
+
       JAVA_OPTS: "-XX:+UseContainerSupport -XX:MaxRAMPercentage=75.0"
     depends_on:
         - redis
