@@ -2,8 +2,9 @@ package ru.sharphurt.musicserver.itunes.service;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
-import ru.sharphurt.musicserver.dataenrichment.EnrichmentExecutionService;
+import ru.sharphurt.musicserver.dataenrichment.EnrichmentService;
 import ru.sharphurt.musicserver.dto.TrackDto;
 import ru.sharphurt.musicserver.itunes.dto.ITunesSearchResponseDto;
 import ru.sharphurt.musicserver.itunes.dto.ITunesTrackDto;
@@ -22,9 +23,10 @@ public class ITunesSearchService implements SearchProvider {
 
     private final ITunesRestService restClient;
     private final ITunesMappingService mapper;
-    private final EnrichmentExecutionService<TrackDto> trackEnrichmentExecutionService;
     private final TrackCacheService trackCacheService;
 
+    @Qualifier("aliasesEnrichmentService")
+    private final EnrichmentService<TrackDto> enrichmentService;
 
     @Override
     public SearchResponseDto<TrackDto> searchTracksBy(SearchRequestDto request) {
@@ -40,12 +42,11 @@ public class ITunesSearchService implements SearchProvider {
         List<TrackDto> tracks = mapper.mapToTrackDto(response.get().results());
         long startIndex = (request.page() - 1) * request.limit();
 
-        List<TrackDto> enrichedTracks = trackEnrichmentExecutionService.enrich(tracks);
-        trackCacheService.saveAll(enrichedTracks);
+        trackCacheService.saveAll(tracks);
 
         return SearchResponseDto.withContent(
             request.type(),
-            enrichedTracks,
+            tracks,
             startIndex + response.get().resultCount(),
             request.query(),
             request.limit(),
@@ -68,8 +69,7 @@ public class ITunesSearchService implements SearchProvider {
             throw new RuntimeException("Трек с id " + id + " не найден");
         }
 
-        TrackDto trackDto = trackEnrichmentExecutionService.enrich(
-            mapper.mapToTrackDto(track.get()));
+        TrackDto trackDto = enrichmentService.enrich(mapper.mapToTrackDto(track.get()));
         trackCacheService.save(trackDto);
         return trackDto;
     }

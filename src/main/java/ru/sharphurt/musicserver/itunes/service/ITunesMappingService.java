@@ -1,5 +1,6 @@
 package ru.sharphurt.musicserver.itunes.service;
 
+import java.util.List;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
@@ -7,8 +8,6 @@ import org.springframework.stereotype.Service;
 import ru.sharphurt.musicserver.dto.TrackDto;
 import ru.sharphurt.musicserver.itunes.dto.ITunesTrackDto;
 import ru.sharphurt.musicserver.util.Utils;
-
-import java.util.List;
 
 @Slf4j
 @Service
@@ -28,22 +27,33 @@ public class ITunesMappingService {
             .replace("100x100bb.jpg", "600x600bb.jpg"), serverBaseUrl);
         List<String> imageUrls = rawImageUrl != null ? List.of(rawImageUrl) : List.of();
 
+        boolean isExplicit = "explicit".equalsIgnoreCase(dto.trackExplicitness());
+
         return TrackDto.builder()
             .iTunesId(dto.trackId())
+            .artistId(dto.artistId())
+            .albumId(dto.collectionId())
+
             .title(dto.trackName())
+            .artistName(dto.artistName())
+            .albumArtistName(dto.artistName())
+            .albumName(dto.collectionName())
+
+            .trackNumber(dto.trackNumber())
+            .discNumber(dto.discNumber())
+
             .genres(dto.primaryGenreName() != null ? List.of(dto.primaryGenreName()) : List.of())
             .imageUrls(imageUrls)
             .downloadUrl(
                 Utils.buildDownloadUrl(dto.trackName(), dto.artistName(), dto.collectionName(),
                     serverBaseUrl))
+            .previewUrl(previewUrl)
+
             .mbid(null)
-            .albumName(dto.collectionName())
-            .artistName(dto.artistName())
             .playcounts(0L)
             .duration(dto.trackTimeMillis())
             .releaseDate(dto.releaseDate())
-            .previewUrl(previewUrl)
+            .isExplicit(isExplicit)
             .build();
     }
-
 }

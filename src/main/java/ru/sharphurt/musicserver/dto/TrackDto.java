@@ -13,17 +13,28 @@ import java.util.Set;
 public class TrackDto {
 
     private Long iTunesId;
+    private Long artistId;
+    private Long albumId;
+
     private String title;
+    private String artistName;
+    private String albumArtistName;
+    private String albumName;
+
+    private Integer trackNumber;
+    private Integer discNumber;
+
     private List<String> genres;
     private List<String> imageUrls;
     private String downloadUrl;
+    private String previewUrl;
+
     private String mbid;
-    private String artistName;
-    private String albumName;
     private long playcounts;
     private long duration;
     private ZonedDateTime releaseDate;
-    private String previewUrl;
+    private boolean isExplicit;
+
     private HashSet<String> titleAliases;
     private HashSet<String> artistNameAliases;
 
@@ -31,7 +42,6 @@ public class TrackDto {
         if (this.titleAliases == null) {
             this.titleAliases = new HashSet<>(List.of(title));
         }
-
         this.titleAliases.addAll(titleAliases);
         return this;
     }
@@ -40,7 +50,6 @@ public class TrackDto {
         if (this.artistNameAliases == null) {
             this.artistNameAliases = new HashSet<>(List.of(artistName));
         }
-
         this.artistNameAliases.addAll(artistAliases);
         return this;
     }

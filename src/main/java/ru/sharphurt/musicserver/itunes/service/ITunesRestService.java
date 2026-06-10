@@ -1,5 +1,12 @@
 package ru.sharphurt.musicserver.itunes.service;
 
+import static ru.sharphurt.musicserver.util.GlobalConstants.ITUNES_BASE_URL;
+import static ru.sharphurt.musicserver.util.GlobalConstants.USER_AGENT;
+
+import java.net.URI;
+import java.nio.charset.StandardCharsets;
+import java.util.List;
+import java.util.Optional;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
@@ -13,14 +20,6 @@ import ru.sharphurt.musicserver.itunes.ITunesQueryBuilder;
 import ru.sharphurt.musicserver.itunes.dto.ITunesSearchResponseDto;
 import ru.sharphurt.musicserver.itunes.dto.ITunesTrackDto;
 import ru.sharphurt.musicserver.search.dto.SearchRequestDto;
-
-import java.net.URI;
-import java.nio.charset.StandardCharsets;
-import java.util.List;
-import java.util.Optional;
-
-import static ru.sharphurt.musicserver.util.GlobalConstants.ITUNES_BASE_URL;
-import static ru.sharphurt.musicserver.util.GlobalConstants.USER_AGENT;
 
 @Slf4j
 @Service
@@ -54,7 +53,6 @@ public class ITunesRestService {
                     .retrieve()
                     .toEntity(ITunesSearchResponseDto.class);
             log.warn("iTunes SEARCH Status: {}", response.getStatusCode());
-            log.info("iTunes SEARCH Response: {}", response.getBody());
 
             if (response.getStatusCode().isError() || response.getBody() == null) {
                 return Optional.empty();

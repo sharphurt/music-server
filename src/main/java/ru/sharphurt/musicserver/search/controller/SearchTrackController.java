@@ -10,14 +10,13 @@ import ru.sharphurt.musicserver.search.service.SearchTrackService;
 
 @RestController
 @RequestMapping("/api/search")
-@CrossOrigin(origins = "*", maxAge = 3600)
 @Slf4j
 @RequiredArgsConstructor
 public class SearchTrackController {
 
     private final SearchTrackService searchService;
 
-    @GetMapping("/track")
+    @PostMapping("/track")
     public SearchResponseDto<TrackDto> searchTrack(@RequestBody SearchRequestDto request) {
         log.info("Received search request: {}", request);
         return searchService.searchTracks(request);
