@@ -50,7 +50,7 @@ public class SlskApiController {
     public ResponseEntity<List<SlskFileTransferDto>> getDownloads() {
         List<SlskFileTransferDto> downloads = downloadService.getDownloads();
         if (downloads == null || downloads.isEmpty()) {
-            return ResponseEntity.notFound().build();
+            return ResponseEntity.ok(List.of());
         }
 
         return ResponseEntity.ok(downloads);

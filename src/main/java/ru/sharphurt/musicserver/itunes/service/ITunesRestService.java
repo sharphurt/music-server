@@ -52,7 +52,7 @@ public class ITunesRestService {
                     .uri(uri)
                     .retrieve()
                     .toEntity(ITunesSearchResponseDto.class);
-            log.warn("iTunes SEARCH Status: {}", response.getStatusCode());
+            log.info("iTunes SEARCH Status: {}", response.getStatusCode());
 
             if (response.getStatusCode().isError() || response.getBody() == null) {
                 return Optional.empty();
