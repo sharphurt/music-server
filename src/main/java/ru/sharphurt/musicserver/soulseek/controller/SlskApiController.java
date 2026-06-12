@@ -93,6 +93,7 @@ public class SlskApiController {
             resolvedPath = Paths.get(incompleteDir, relativePath.toString());
         }
 
+        log.info("Resolved path: {}", resolvedPath);
         File audioFile = resolvedPath.toFile();
         if (!audioFile.exists()) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
