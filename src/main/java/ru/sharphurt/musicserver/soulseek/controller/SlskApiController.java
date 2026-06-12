@@ -80,6 +80,7 @@ public class SlskApiController {
         @RequestParam String transferId,
         @RequestHeader(value = HttpHeaders.RANGE, required = false) String rangeHeader) {
 
+        log.info("Requested stream: transferId: {}, rangeHeader: {}", transferId, rangeHeader);
         SlskFileTransferDto task = downloadService.getDownloadInfo(transferId);
         if (task == null) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
