@@ -1,44 +1,45 @@
 services:
-  app:
-    container_name: music-search-app
-    build: .
-    ports:
-      - "8090:8080"
-    environment:
-      SPRING_PROFILES_ACTIVE: dev
-      SPRING_DATA_REDIS_HOST: redis
-      SPRING_DATA_REDIS_PORT: 6379
-      SPRING_DATA_REDIS_PASSWORD: ${REDIS_PASSWORD}
-      REDIS_PASSWORD: ${REDIS_PASSWORD}
-      SLSKD_BASE_URL: ${SLSKD_BASE_URL}
-      SLSKD_SECRET_API_KEY: ${SLSKD_SECRET_API_KEY}
-      SLSKD_COMPLETE_DIR: ${SLSKD_COMPLETE_DIR}
-      SLSKD_INCOMPLETE_DIR: ${SLSKD_INCOMPLETE_DIR}
-      SERVER_BASE_URL: ${SERVER_BASE_URL}
+    app:
+        container_name: music-search-app
+        build: .
+        ports:
+            - "8090:8080"
+        environment:
+            SPRING_PROFILES_ACTIVE: dev
+            SPRING_DATA_REDIS_HOST: redis
+            SPRING_DATA_REDIS_PORT: 6379
+            SPRING_DATA_REDIS_PASSWORD: ${REDIS_PASSWORD}
+            REDIS_PASSWORD: ${REDIS_PASSWORD}
+            SLSKD_BASE_URL: ${SLSKD_BASE_URL}
+            SLSKD_SECRET_API_KEY: ${SLSKD_SECRET_API_KEY}
+            SLSKD_COMPLETE_DIR: ${SLSKD_COMPLETE_DIR}
+            SLSKD_INCOMPLETE_DIR: ${SLSKD_INCOMPLETE_DIR}
+            SERVER_BASE_URL: ${SERVER_BASE_URL}
+            JAVA_OPTS: "-XX:+UseContainerSupport -XX:MaxRAMPercentage=75.0"
+        depends_on:
+            - redis
+        volumes:
+            - ${MUSIC_DIR}:${MUSIC_DIR}
+        restart: unless-stopped
 
-      JAVA_OPTS: "-XX:+UseContainerSupport -XX:MaxRAMPercentage=75.0"
-    depends_on:
-        - redis
-    restart: unless-stopped
-
-  redis:
-    image: redis:latest
-    container_name: redis
-    ports:
-        - '6379:6379'
-    volumes:
-        - redis-data:/data
-    command:
-        - redis-server
-        - --requirepass
-        - ${REDIS_PASSWORD}
-        - --appendonly
-        - "yes"
-    restart: unless-stopped
+    redis:
+        image: redis:latest
+        container_name: redis
+        ports:
+            - '6379:6379'
+        volumes:
+            - redis-data:/data
+        command:
+            - redis-server
+            - --requirepass
+            - ${REDIS_PASSWORD}
+            - --appendonly
+            - "yes"
+        restart: unless-stopped
 
 volumes:
-  redis-data:
-    driver: local
+    redis-data:
+        driver: local
 
 networks:
     default:
