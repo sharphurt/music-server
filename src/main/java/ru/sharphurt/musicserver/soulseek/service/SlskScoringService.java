@@ -41,8 +41,8 @@ public class SlskScoringService {
             .anyMatch(basename::contains);
 
         if (!titleMatched) {
-            log.info("Basename {} (Filename {}) has no aliases {}", basename, filename,
-                dbTrack.getTitleAliases());
+//            log.info("Basename {} (Filename {}) has no aliases {}", basename, filename,
+//                dbTrack.getTitleAliases());
             return new SlskFileScoreDto(fileNodeDto, 0.0);
         }
 

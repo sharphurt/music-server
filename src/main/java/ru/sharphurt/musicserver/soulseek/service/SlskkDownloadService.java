@@ -43,7 +43,8 @@ public class SlskkDownloadService {
                 .flatMap(slskDirectoryDto -> slskDirectoryDto
                     .getFiles()
                     .stream()))
-            .sorted(Comparator.comparing(SlskFileTransferDto::getEnqueuedAt).reversed())
+            .sorted(Comparator.nullsFirst(Comparator.comparing(SlskFileTransferDto::getEnqueuedAt))
+                .reversed())
             .toList();
     }
 
