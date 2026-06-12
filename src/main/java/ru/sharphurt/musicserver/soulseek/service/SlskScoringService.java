@@ -30,8 +30,7 @@ public class SlskScoringService {
 
     private SlskFileScoreDto scoreFile(SlskFileNodeDto fileNodeDto, TrackDto dbTrack) {
         double targetDurationSec = dbTrack.getDuration() / 1000.0;
-        double similarityScore =
-            targetDurationSec - Math.abs(targetDurationSec - fileNodeDto.getLength());
+        double diff = Math.abs(targetDurationSec - fileNodeDto.getLength());
 
         String filename = fileNodeDto.getFilename().toLowerCase();
         String basename = filename.substring(
@@ -44,9 +43,10 @@ public class SlskScoringService {
         if (!titleMatched) {
             log.info("Basename {} (Filename {}) has no aliases {}", basename, filename,
                 dbTrack.getTitleAliases());
-            similarityScore = 0;
+            return new SlskFileScoreDto(fileNodeDto, 0.0);
         }
 
+        double similarityScore = Math.max(0.0, (1.0 - diff / targetDurationSec)) * 100.0;
         return new SlskFileScoreDto(fileNodeDto, similarityScore);
     }
 }
