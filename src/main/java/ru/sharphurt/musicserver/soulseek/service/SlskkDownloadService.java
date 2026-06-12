@@ -27,6 +27,7 @@ public class SlskkDownloadService {
         if (responseDto.isEmpty()) {
             log.error("Failed to enqueue download task. DownloadRequestDto: {}",
                 slskDownloadRequestDto);
+            return null;
         }
 
         return responseDto.get();
@@ -44,5 +45,17 @@ public class SlskkDownloadService {
                     .stream()))
             .sorted(Comparator.comparing(SlskFileTransferDto::getEnqueuedAt).reversed())
             .toList();
+    }
+
+
+    public SlskFileTransferDto getDownloadInfo(String transferId) {
+        Optional<SlskFileTransferDto> downloadInfo = restService.getDownloadById(transferId);
+
+        if (downloadInfo.isEmpty()) {
+            log.error("Failed to get download task info. TransferId: {}", transferId);
+            return null;
+        }
+
+        return downloadInfo.get();
     }
 }

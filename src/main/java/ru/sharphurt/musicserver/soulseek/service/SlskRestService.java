@@ -13,6 +13,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestClient;
 import ru.sharphurt.musicserver.soulseek.dto.SlskFileNodeDto;
+import ru.sharphurt.musicserver.soulseek.dto.SlskFileTransferDto;
 import ru.sharphurt.musicserver.soulseek.dto.SlskPeerResponseDto;
 import ru.sharphurt.musicserver.soulseek.dto.SlskSearchResultDto;
 import ru.sharphurt.musicserver.soulseek.dto.SlskTransfersResponseDto;
@@ -130,6 +131,27 @@ public class SlskRestService {
         } catch (Exception e) {
             log.error("Ошибка получения списка загрузок", e);
             return List.of();
+        }
+    }
+
+
+    public Optional<SlskFileTransferDto> getDownloadById(String id) {
+        try {
+            SlskFileTransferDto slskDownloadsResultDto = restClient.get()
+                .uri("/api/v0/transfers/downloads/batches/" + id)
+                .retrieve()
+                .body(new ParameterizedTypeReference<>() {
+                });
+
+            if (slskDownloadsResultDto == null) {
+                log.error("Не удалось получить данные о загрузке {}", id);
+                return Optional.empty();
+            }
+
+            return Optional.of(slskDownloadsResultDto);
+        } catch (Exception e) {
+            log.error("Ошибка получения данных о загрузке {}", id, e);
+            return Optional.empty();
         }
     }
 }
