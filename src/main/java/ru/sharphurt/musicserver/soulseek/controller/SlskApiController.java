@@ -89,11 +89,14 @@ public class SlskApiController {
         Path relativePath = parseRelativePath(task.getFilename());
 
         Path resolvedPath = Paths.get(downloadsDir, relativePath.toString());
+        log.info("Resolved path: {}", resolvedPath);
+
         if (!Files.exists(resolvedPath)) {
+            log.info("File not exists in path: {}", resolvedPath);
             resolvedPath = Paths.get(incompleteDir, relativePath.toString());
+            log.info("Path will be: {}", resolvedPath);
         }
 
-        log.info("Resolved path: {}", resolvedPath);
         File audioFile = resolvedPath.toFile();
         if (!audioFile.exists()) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
