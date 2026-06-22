@@ -14,10 +14,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestClient;
 import ru.sharphurt.musicserver.soulseek.dto.SlskFileNodeDto;
 import ru.sharphurt.musicserver.soulseek.dto.SlskFileTransferDto;
-import ru.sharphurt.musicserver.soulseek.dto.SlskPeerResponseDto;
 import ru.sharphurt.musicserver.soulseek.dto.SlskSearchResultDto;
-import ru.sharphurt.musicserver.soulseek.dto.SlskTransfersResponseDto;
-import ru.sharphurt.musicserver.soulseek.dto.SlskUserDownloadDto;
+import ru.sharphurt.musicserver.soulseek.dto.rest.SlskPeerResponseDto;
+import ru.sharphurt.musicserver.soulseek.dto.rest.SlskTransfersResponseDto;
 
 @Slf4j
 @Service
@@ -84,10 +83,10 @@ public class SlskRestService {
         }
     }
 
-    public Optional<SlskSearchResultDto> getSearchResult(UUID uuid) {
+    public Optional<SlskSearchResultDto>  getSearchResult(UUID uuid) {
         try {
             SlskSearchResultDto slskSearchResultDto = restClient.get()
-                .uri("/api/v0/searches/{id}?includeResponses=true", uuid)
+                .uri("/api/v0/searches/{id}/includeResponses=true", uuid)
                 .retrieve()
                 .body(SlskSearchResultDto.class);
 
@@ -114,43 +113,22 @@ public class SlskRestService {
         }
     }
 
-    public List<SlskUserDownloadDto> getDownloads() {
-        try {
-            List<SlskUserDownloadDto> slskDownloadsResultDto = restClient.get()
-                .uri("/api/v0/transfers/downloads")
-                .retrieve()
-                .body(new ParameterizedTypeReference<>() {
-                });
-
-            if (slskDownloadsResultDto == null) {
-                log.error("Не удалось получить список загрузок");
-                return List.of();
-            }
-
-            return slskDownloadsResultDto;
-        } catch (Exception e) {
-            log.error("Ошибка получения списка загрузок", e);
-            return List.of();
-        }
-    }
-
-
-    public Optional<SlskFileTransferDto> getDownloadById(String id) {
+    public Optional<SlskFileTransferDto> getDownloadByTransferId(String transferId) {
         try {
             SlskFileTransferDto slskDownloadsResultDto = restClient.get()
-                .uri("/api/v0/transfers/downloads/batches/" + id)
+                .uri("/api/v0/transfers/downloads/batches/" + transferId)
                 .retrieve()
                 .body(new ParameterizedTypeReference<>() {
                 });
 
             if (slskDownloadsResultDto == null) {
-                log.error("Не удалось получить данные о загрузке {}", id);
+                log.error("Не удалось получить данные о загрузке {}", transferId);
                 return Optional.empty();
             }
 
             return Optional.of(slskDownloadsResultDto);
         } catch (Exception e) {
-            log.error("Ошибка получения данных о загрузке {}", id, e);
+            log.error("Ошибка получения данных о загрузке {}", transferId, e);
             return Optional.empty();
         }
     }

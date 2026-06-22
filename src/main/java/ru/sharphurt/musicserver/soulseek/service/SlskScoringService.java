@@ -1,15 +1,13 @@
 package ru.sharphurt.musicserver.soulseek.service;
 
+import java.util.Collection;
+import java.util.Comparator;
+import java.util.List;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import ru.sharphurt.musicserver.locallibrary.enitiy.TrackEntity;
 import ru.sharphurt.musicserver.soulseek.dto.SlskFileNodeDto;
 import ru.sharphurt.musicserver.soulseek.dto.SlskFileScoreDto;
-
-import java.util.Collection;
-import java.util.Comparator;
-import java.util.List;
-import java.util.stream.Collectors;
 
 @Slf4j
 @Service
@@ -25,7 +23,8 @@ public class SlskScoringService {
             .map(e -> scoreFile(e, trackDto))
             .sorted(Comparator.comparingDouble(SlskFileScoreDto::similarityScore)
                 .thenComparing(e -> e.fileNodeDto().getUploadSpeed()).reversed())
-            .collect(Collectors.toList());
+            .filter(e -> e.similarityScore() > 0)
+            .toList();
     }
 
     private SlskFileScoreDto scoreFile(SlskFileNodeDto fileNodeDto, TrackEntity dbTrack) {

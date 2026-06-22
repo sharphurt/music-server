@@ -4,6 +4,8 @@ import lombok.Data;
 
 @Data
 public class SlskFileNodeDto {
+
+    private long trackId;
     private String filename;
     private String extension;
     private long size;

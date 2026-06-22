@@ -1,6 +1,7 @@
 package ru.sharphurt.musicserver.soulseek.dto;
 
 import lombok.Data;
+import ru.sharphurt.musicserver.soulseek.dto.rest.SlskPeerResponseDto;
 
 import java.time.Instant;
 import java.util.List;

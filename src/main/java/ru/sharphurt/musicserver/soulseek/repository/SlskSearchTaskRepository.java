@@ -8,6 +8,6 @@ import ru.sharphurt.musicserver.soulseek.entity.SlskSearchTaskEntity;
 @Repository
 public interface SlskSearchTaskRepository extends JpaRepository<SlskSearchTaskEntity, Long> {
 
-    List<SlskSearchTaskEntity> findByTrackId(Long trackId);
+    List<SlskSearchTaskEntity> findAllByTrackIdAndDisabledFalse(Long trackId);
 
 }

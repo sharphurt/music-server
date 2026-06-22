@@ -4,8 +4,6 @@ import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
@@ -30,7 +28,6 @@ import org.hibernate.type.SqlTypes;
 public class TrackEntity {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "itunes_id")
     private Long iTunesId;
 
@@ -103,7 +100,7 @@ public class TrackEntity {
 
     @Column(name = "track_status")
     @Enumerated(EnumType.STRING)
-    private TrackStatus trackStatus;
+    private TrackFileStatus trackStatus;
 
     @Column(name = "full_path")
     private String fullPath;

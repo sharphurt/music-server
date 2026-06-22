@@ -7,6 +7,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.List;
+import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
@@ -22,13 +23,15 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.mvc.method.annotation.StreamingResponseBody;
-import ru.sharphurt.musicserver.soulseek.entity.SlskSearchTaskEntity;
-import ru.sharphurt.musicserver.soulseek.dto.SlskDownloadRequestDto;
 import ru.sharphurt.musicserver.soulseek.dto.SlskFileScoreDto;
 import ru.sharphurt.musicserver.soulseek.dto.SlskFileTransferDto;
-import ru.sharphurt.musicserver.soulseek.dto.SlskTransfersResponseDto;
+import ru.sharphurt.musicserver.soulseek.dto.rest.SlskDownloadRequestDto;
+import ru.sharphurt.musicserver.soulseek.dto.rest.SlskDownloadResponseDto;
+import ru.sharphurt.musicserver.soulseek.entity.SlskDownloadEntity;
+import ru.sharphurt.musicserver.soulseek.entity.SlskSearchTaskEntity;
 import ru.sharphurt.musicserver.soulseek.service.SlskSearchService;
-import ru.sharphurt.musicserver.soulseek.service.SlskkDownloadService;
+import ru.sharphurt.musicserver.soulseek.service.SlskDownloadService;
+import ru.sharphurt.musicserver.user.repository.UserRepository;
 
 @Slf4j
 @RestController
@@ -38,7 +41,9 @@ public class SlskApiController {
 
     private final SlskSearchService searchService;
 
-    private final SlskkDownloadService downloadService;
+    private final SlskDownloadService downloadService;
+
+    private final UserRepository userRepository;
 
     @Value("${slskd.complete-dir}")
     private String downloadsDir;
@@ -60,14 +65,19 @@ public class SlskApiController {
     }
 
     @PostMapping("/download")
-    public ResponseEntity<SlskTransfersResponseDto> enqueueDownload(
+    public ResponseEntity<SlskDownloadEntity> enqueueDownload(
         @RequestBody SlskDownloadRequestDto downloadRequestDto) {
-        return ResponseEntity.ok(downloadService.enqueueDownload(downloadRequestDto));
+        SlskDownloadEntity downloadEntity = downloadService.enqueueDownload(downloadRequestDto);
+        if (downloadEntity == null) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        }
+
+        return ResponseEntity.ok(downloadEntity);
     }
 
     @GetMapping("/download/list")
-    public ResponseEntity<List<SlskFileTransferDto>> getDownloads() {
-        List<SlskFileTransferDto> downloads = downloadService.getDownloads();
+    public ResponseEntity<List<SlskDownloadResponseDto>> getDownloads() {
+        List<SlskDownloadResponseDto> downloads = downloadService.getDownloads(userRepository.getReferenceById(1L));
         if (downloads == null || downloads.isEmpty()) {
             return ResponseEntity.ok(List.of());
         }
@@ -78,11 +88,12 @@ public class SlskApiController {
     // TODO REFACTOR
     @GetMapping("/stream")
     public ResponseEntity<StreamingResponseBody> streamAudio(
-        @RequestParam String transferId,
+        @RequestParam UUID downloadUuid,
         @RequestHeader(value = HttpHeaders.RANGE, required = false) String rangeHeader) {
 
-        log.info("Requested stream: transferId: {}, rangeHeader: {}", transferId, rangeHeader);
-        SlskFileTransferDto task = downloadService.getDownloadInfo(transferId);
+        log.info("Requested stream: downloadUuid: {}, rangeHeader: {}", downloadUuid, rangeHeader);
+        //TODO add auth
+        SlskFileTransferDto task = downloadService.getDownloadInfo(downloadUuid, userRepository.getReferenceById(1L));
         if (task == null) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
         }

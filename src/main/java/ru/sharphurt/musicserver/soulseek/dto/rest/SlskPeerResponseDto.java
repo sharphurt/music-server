@@ -1,6 +1,7 @@
-package ru.sharphurt.musicserver.soulseek.dto;
+package ru.sharphurt.musicserver.soulseek.dto.rest;
 
 import lombok.Data;
+import ru.sharphurt.musicserver.soulseek.dto.SlskFileNodeDto;
 
 import java.util.List;
 
