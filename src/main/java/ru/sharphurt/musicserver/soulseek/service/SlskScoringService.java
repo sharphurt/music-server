@@ -2,7 +2,7 @@ package ru.sharphurt.musicserver.soulseek.service;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
-import ru.sharphurt.musicserver.dto.TrackDto;
+import ru.sharphurt.musicserver.locallibrary.enitiy.TrackEntity;
 import ru.sharphurt.musicserver.soulseek.dto.SlskFileNodeDto;
 import ru.sharphurt.musicserver.soulseek.dto.SlskFileScoreDto;
 
@@ -15,7 +15,7 @@ import java.util.stream.Collectors;
 @Service
 public class SlskScoringService {
 
-    public List<SlskFileScoreDto> matchAndSort(TrackDto trackDto,
+    public List<SlskFileScoreDto> matchAndSort(TrackEntity trackDto,
         Collection<SlskFileNodeDto> slskResults) {
         log.debug("Starting matchTracks for '{}' by '{}' ({} ms), candidates: {}",
             trackDto.getTitle(), trackDto.getArtistName(), trackDto.getDuration(),
@@ -28,7 +28,7 @@ public class SlskScoringService {
             .collect(Collectors.toList());
     }
 
-    private SlskFileScoreDto scoreFile(SlskFileNodeDto fileNodeDto, TrackDto dbTrack) {
+    private SlskFileScoreDto scoreFile(SlskFileNodeDto fileNodeDto, TrackEntity dbTrack) {
         double targetDurationSec = dbTrack.getDuration() / 1000.0;
         double diff = Math.abs(targetDurationSec - fileNodeDto.getLength());
 
@@ -41,8 +41,6 @@ public class SlskScoringService {
             .anyMatch(basename::contains);
 
         if (!titleMatched) {
-//            log.info("Basename {} (Filename {}) has no aliases {}", basename, filename,
-//                dbTrack.getTitleAliases());
             return new SlskFileScoreDto(fileNodeDto, 0.0);
         }
 

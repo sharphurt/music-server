@@ -1,4 +1,4 @@
-package ru.sharphurt.musicserver.dto;
+package ru.sharphurt.musicserver.locallibrary.dto;
 
 public enum EntityType {
     ARTIST,

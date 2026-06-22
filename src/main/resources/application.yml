@@ -1,24 +1,36 @@
-#file: noinspection YAMLSchemaValidation
 spring:
-  data:
-    redis:
-      host: ${REDIS_HOST:127.0.0.1}
-      port: ${REDIS_PORT:6379}
-      password: ${REDIS_PASSWORD:password}
+    datasource:
+        url: ${POSTGRES_HOST:jdbc:postgresql://localhost:5433/musicserver}
+        username: ${POSTGRES_USER:sharphurt}
+        password: ${POSTGRES_PASSWORD:password}
+        driver-class-name: org.postgresql.Driver
 
-lastfm:
-  url: https://ws.audioscrobbler.com/2.0
-  image-base-url: https://lastfm.freetls.fastly.net
+    jpa:
+        database-platform: org.hibernate.dialect.PostgreSQLDialect
+        hibernate:
+            ddl-auto: validate
+        show-sql: true
+        properties:
+            hibernate:
+                format_sql: true
 
+    cache:
+        type: caffeine
+        caffeine:
+            spec: maximumSize=500,expireAfterWrite=10m
+
+    liquibase:
+        enabled: true
+        change-log: classpath:db/changelog/db.changelog-master.yaml
 
 slskd:
-  url: ${SLSKD_BASE_URL:http://localhost:5030}
-  api-key: ${SLSKD_SECRET_API_KEY:SuperSecretKey123456789!}
-  complete-dir: ${SLSKD_COMPLETE_DIR:/home/username/music/downloads}
-  incomplete-dir: ${SLSKD_INCOMPLETE_DIR:/home/username/music/incomplete}
+    url: ${SLSKD_BASE_URL:http://localhost:5030}
+    api-key: ${SLSKD_SECRET_API_KEY:SuperSecretKey123456789!}
+    complete-dir: ${SLSKD_COMPLETE_DIR:/home/username/music/downloads}
+    incomplete-dir: ${SLSKD_INCOMPLETE_DIR:/home/username/music/incomplete}
 
 server-base-url: ${SERVER_BASE_URL:http://localhost:8080}
 
 logging:
-  level:
-    ru.sharphurt.musicserver: info
+    level:
+        ru.sharphurt.musicserver: info

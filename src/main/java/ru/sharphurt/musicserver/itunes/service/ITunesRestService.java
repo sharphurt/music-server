@@ -15,7 +15,7 @@ import org.springframework.http.client.SimpleClientHttpRequestFactory;
 import org.springframework.http.converter.json.JacksonJsonHttpMessageConverter;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestClient;
-import ru.sharphurt.musicserver.dto.TrackDto;
+import ru.sharphurt.musicserver.locallibrary.enitiy.TrackEntity;
 import ru.sharphurt.musicserver.itunes.ITunesQueryBuilder;
 import ru.sharphurt.musicserver.itunes.dto.ITunesSearchResponseDto;
 import ru.sharphurt.musicserver.itunes.dto.ITunesTrackDto;
@@ -65,7 +65,7 @@ public class ITunesRestService {
         }
     }
 
-    public Optional<ITunesTrackDto> lookup(TrackDto original, String country) {
+    public Optional<ITunesTrackDto> lookup(TrackEntity original, String country) {
         return lookup(original.getITunesId(), country);
     }
 

@@ -1,16 +1,25 @@
 package ru.sharphurt.musicserver.soulseek.service;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.Optional;
+import java.util.UUID;
+import java.util.stream.Stream;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
-import ru.sharphurt.musicserver.dto.TrackDto;
+import ru.sharphurt.musicserver.soulseek.entity.SlskSearchTaskEntity;
+import ru.sharphurt.musicserver.locallibrary.enitiy.TrackEntity;
 import ru.sharphurt.musicserver.itunes.service.ITunesSearchService;
-import ru.sharphurt.musicserver.redis.SoulseekTaskCacheService;
-import ru.sharphurt.musicserver.soulseek.dto.*;
+import ru.sharphurt.musicserver.soulseek.repository.SlskSearchTaskRepository;
+import ru.sharphurt.musicserver.soulseek.dto.SlskFileNodeDto;
+import ru.sharphurt.musicserver.soulseek.dto.SlskFileScoreDto;
+import ru.sharphurt.musicserver.soulseek.dto.SlskPeerResponseDto;
+import ru.sharphurt.musicserver.soulseek.dto.SlskSearchResultDto;
 import ru.sharphurt.musicserver.util.DataClearingUtils;
-
-import java.util.*;
-import java.util.stream.Stream;
 
 @Slf4j
 @Service
@@ -19,26 +28,27 @@ public class SlskSearchService {
 
     private final SlskRestService restService;
     private final ITunesSearchService iTunesSearchService;
-    private final SoulseekTaskCacheService cacheService;
     private final SlskScoringService scoringService;
+    private final SlskSearchTaskRepository slskSearchTaskRepository;
 
-    public List<SlskSearchTaskDto> initiateSearch(long trackId) {
-        TrackDto trackDto = iTunesSearchService.searchTrackById(trackId);
-        List<SlskSearchTaskDto> searchTasks = trackDto.getTitleAliases().stream().flatMap(
+
+    public List<SlskSearchTaskEntity> initiateSearch(long trackId) {
+        TrackEntity trackDto = iTunesSearchService.searchTrackById(trackId);
+        List<SlskSearchTaskEntity> searchTasks = trackDto.getTitleAliases().stream().flatMap(
                 alias -> Stream.of(trackDto.getArtistName() + " " + alias,
                     alias + " " + trackDto.getArtistName(), alias))
             .map(e -> DataClearingUtils.normalizeString(e).toLowerCase()).filter(e -> !e.isEmpty())
-            .distinct().map(query -> createSearchTask(trackDto, query)).filter(Objects::nonNull)
+            .distinct()
+            .map(query -> createSearchTask(trackDto, query))
+            .filter(Objects::nonNull)
             .toList();
 
-        for (SlskSearchTaskDto searchTask : searchTasks) {
-            cacheService.save(searchTask);
-        }
+        slskSearchTaskRepository.saveAll(searchTasks);
 
         return searchTasks;
     }
 
-    public SlskSearchTaskDto createSearchTask(TrackDto trackDto, String query) {
+    public SlskSearchTaskEntity createSearchTask(TrackEntity trackDto, String query) {
         UUID searchId = UUID.randomUUID();
         boolean isSuccessful = restService.postSearchTask(searchId, query);
         if (!isSuccessful) {
@@ -46,18 +56,22 @@ public class SlskSearchService {
             return null;
         }
 
-        return new SlskSearchTaskDto(trackDto.getITunesId(), query, searchId);
+        return SlskSearchTaskEntity.builder()
+            .query(query)
+            .trackId(trackDto.getITunesId())
+            .uuid(searchId)
+            .build();
     }
 
     public List<SlskFileScoreDto> fetchSearchResults(long trackId, int maxResults) {
-        TrackDto trackDto = iTunesSearchService.searchTrackById(trackId);
+        TrackEntity trackDto = iTunesSearchService.searchTrackById(trackId);
         List<SlskFileNodeDto> filesData = collectFiles(trackId);
 
         return scoringService.matchAndSort(trackDto, filesData).stream().limit(maxResults).toList();
     }
 
     private List<SlskFileNodeDto> collectFiles(long trackId) {
-        List<SlskSearchTaskDto> tasksData = cacheService.getAllForTrack(trackId);
+        List<SlskSearchTaskEntity> tasksData = slskSearchTaskRepository.findByTrackId(trackId);
 
         if (tasksData == null || tasksData.isEmpty()) {
             log.info("Для трека id={} нет активных задач на поиск", trackId);
@@ -66,14 +80,15 @@ public class SlskSearchService {
 
         Map<String, SlskFileNodeDto> aggregatedFiles = new HashMap<>();
 
-        for (SlskSearchTaskDto task : tasksData) {
+        for (SlskSearchTaskEntity task : tasksData) {
             try {
                 Optional<SlskSearchResultDto> searchResult = restService.getSearchResult(
-                    task.uuid());
+                    task.getUuid());
 
                 if (searchResult.isEmpty()) {
                     log.error("Для задачи {} Soulseek ничего не вернул. Пропускаем", task);
-                    cacheService.delete(task);
+                    task.setDisabled(true);
+                    slskSearchTaskRepository.save(task);
                     continue;
                 }
 

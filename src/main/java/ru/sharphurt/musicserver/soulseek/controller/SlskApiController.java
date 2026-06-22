@@ -22,10 +22,10 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.mvc.method.annotation.StreamingResponseBody;
+import ru.sharphurt.musicserver.soulseek.entity.SlskSearchTaskEntity;
 import ru.sharphurt.musicserver.soulseek.dto.SlskDownloadRequestDto;
 import ru.sharphurt.musicserver.soulseek.dto.SlskFileScoreDto;
 import ru.sharphurt.musicserver.soulseek.dto.SlskFileTransferDto;
-import ru.sharphurt.musicserver.soulseek.dto.SlskSearchTaskDto;
 import ru.sharphurt.musicserver.soulseek.dto.SlskTransfersResponseDto;
 import ru.sharphurt.musicserver.soulseek.service.SlskSearchService;
 import ru.sharphurt.musicserver.soulseek.service.SlskkDownloadService;
@@ -47,8 +47,8 @@ public class SlskApiController {
     private String incompleteDir;
 
     @PostMapping("/search")
-    public ResponseEntity<List<SlskSearchTaskDto>> createSearchTask(@RequestParam Long trackId) {
-        List<SlskSearchTaskDto> searchTasks = searchService.initiateSearch(trackId);
+    public ResponseEntity<List<SlskSearchTaskEntity>> createSearchTask(@RequestParam Long trackId) {
+        List<SlskSearchTaskEntity> searchTasks = searchService.initiateSearch(trackId);
         return ResponseEntity.ok(searchTasks);
     }
 
@@ -75,6 +75,7 @@ public class SlskApiController {
         return ResponseEntity.ok(downloads);
     }
 
+    // TODO REFACTOR
     @GetMapping("/stream")
     public ResponseEntity<StreamingResponseBody> streamAudio(
         @RequestParam String transferId,

@@ -6,10 +6,6 @@ services:
             - "8090:8080"
         environment:
             SPRING_PROFILES_ACTIVE: dev
-            SPRING_DATA_REDIS_HOST: redis
-            SPRING_DATA_REDIS_PORT: 6379
-            SPRING_DATA_REDIS_PASSWORD: ${REDIS_PASSWORD}
-            REDIS_PASSWORD: ${REDIS_PASSWORD}
             SLSKD_BASE_URL: ${SLSKD_BASE_URL}
             SLSKD_SECRET_API_KEY: ${SLSKD_SECRET_API_KEY}
             SLSKD_COMPLETE_DIR: ${SLSKD_COMPLETE_DIR}
@@ -17,29 +13,22 @@ services:
             SERVER_BASE_URL: ${SERVER_BASE_URL}
             JAVA_OPTS: "-XX:+UseContainerSupport -XX:MaxRAMPercentage=75.0"
         depends_on:
-            - redis
+            - postgres
         volumes:
             - ${MUSIC_DIR}:${MUSIC_DIR}
         restart: unless-stopped
 
-    redis:
-        image: redis:latest
-        container_name: redis
+    postgres:
+        image: postgres:17-alpine
+        container_name: postgres
+        restart: always
+        environment:
+            POSTGRES_HOST: ${POSTGRES_HOST}
+            POSTGRES_USER: ${POSTGRES_USER}
+            POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+            POSTGRES_DB: musicserver
         ports:
-            - '6379:6379'
-        volumes:
-            - redis-data:/data
-        command:
-            - redis-server
-            - --requirepass
-            - ${REDIS_PASSWORD}
-            - --appendonly
-            - "yes"
-        restart: unless-stopped
-
-volumes:
-    redis-data:
-        driver: local
+            - "5433:5432"
 
 networks:
     default:
