@@ -10,5 +10,5 @@ public class SlskDirectoryDto {
 
     private String directory;
     private int fileCount;
-    private List<SlskFileTransferDto> files;
+    private List<SlskTransferDto> files;
 }

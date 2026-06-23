@@ -24,7 +24,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.mvc.method.annotation.StreamingResponseBody;
 import ru.sharphurt.musicserver.soulseek.dto.SlskFileScoreDto;
-import ru.sharphurt.musicserver.soulseek.dto.SlskFileTransferDto;
+import ru.sharphurt.musicserver.soulseek.dto.SlskTransferDto;
 import ru.sharphurt.musicserver.soulseek.dto.rest.SlskDownloadRequestDto;
 import ru.sharphurt.musicserver.soulseek.dto.rest.SlskDownloadResponseDto;
 import ru.sharphurt.musicserver.soulseek.entity.SlskDownloadEntity;
@@ -93,7 +93,7 @@ public class SlskApiController {
 
         log.info("Requested stream: downloadUuid: {}, rangeHeader: {}", downloadUuid, rangeHeader);
         //TODO add auth
-        SlskFileTransferDto task = downloadService.getDownloadInfo(downloadUuid, userRepository.getReferenceById(1L));
+        SlskTransferDto task = downloadService.getDownloadInfo(downloadUuid, userRepository.getReferenceById(1L));
         if (task == null) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
         }

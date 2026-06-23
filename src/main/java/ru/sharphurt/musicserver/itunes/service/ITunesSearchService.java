@@ -8,7 +8,7 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import ru.sharphurt.musicserver.dataenrichment.EnrichmentService;
-import ru.sharphurt.musicserver.locallibrary.enitiy.TrackEntity;
+import ru.sharphurt.musicserver.library.enitiy.TrackEntity;
 import ru.sharphurt.musicserver.itunes.dto.ITunesSearchResponseDto;
 import ru.sharphurt.musicserver.itunes.dto.ITunesTrackDto;
 import ru.sharphurt.musicserver.itunes.mapper.ITunesMapper;

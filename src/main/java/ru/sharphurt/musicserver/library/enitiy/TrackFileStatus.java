@@ -1,4 +1,4 @@
-package ru.sharphurt.musicserver.locallibrary.enitiy;
+package ru.sharphurt.musicserver.library.enitiy;
 
 public enum TrackFileStatus {
     IN_LIBRARY,

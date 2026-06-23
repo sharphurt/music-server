@@ -1,4 +1,4 @@
-package ru.sharphurt.musicserver.locallibrary.enitiy;
+package ru.sharphurt.musicserver.library.enitiy;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;

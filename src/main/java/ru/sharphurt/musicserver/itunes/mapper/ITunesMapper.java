@@ -5,7 +5,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
-import ru.sharphurt.musicserver.locallibrary.enitiy.TrackEntity;
+import ru.sharphurt.musicserver.library.enitiy.TrackEntity;
 import ru.sharphurt.musicserver.itunes.dto.ITunesTrackDto;
 import ru.sharphurt.musicserver.util.Utils;
 

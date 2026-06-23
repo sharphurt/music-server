@@ -3,7 +3,7 @@ package ru.sharphurt.musicserver.search.service;
 import lombok.NonNull;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
-import ru.sharphurt.musicserver.locallibrary.enitiy.TrackEntity;
+import ru.sharphurt.musicserver.library.enitiy.TrackEntity;
 import ru.sharphurt.musicserver.search.SearchProvider;
 import ru.sharphurt.musicserver.search.dto.SearchRequestDto;
 import ru.sharphurt.musicserver.search.dto.SearchResponseDto;

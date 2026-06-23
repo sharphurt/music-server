@@ -3,6 +3,10 @@ package ru.sharphurt.musicserver.soulseek.entity;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
@@ -12,7 +16,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import ru.sharphurt.musicserver.locallibrary.enitiy.TrackEntity;
+import ru.sharphurt.musicserver.library.enitiy.TrackEntity;
 import ru.sharphurt.musicserver.user.entity.UserEntity;
 
 @Entity
@@ -24,6 +28,7 @@ import ru.sharphurt.musicserver.user.entity.UserEntity;
 public class SlskDownloadEntity {
 
     @Id
+    @GeneratedValue(strategy = GenerationType.UUID)
     @Column(name = "uuid")
     private UUID uuid;
 
@@ -38,4 +43,30 @@ public class SlskDownloadEntity {
     @ManyToOne
     @JoinColumn(name = "track_id")
     private TrackEntity trackMetadata;
+
+    @Column(name = "intent", nullable = false)
+    @Enumerated(EnumType.STRING)
+    private DownloadIntent downloadIntent;
+
+    @Column(name = "status", nullable = false)
+    @Enumerated(EnumType.STRING)
+    private DownloadStatus downloadStatus;
+
+    @Column(name = "local_filename")
+    private String localFilename;
+
+    @Column(name = "library_path")
+    private String libraryFilename;
+
+    @Column(name = "error_message")
+    private String errorMessage;
+
+    @Column(name = "slsk_username")
+    private String slskUsername;
+
+    @Column(name = "slsk_filename")
+    private String slskFilename;
+
+    @Column(name = "slsk_filesize")
+    private long slskFilesize;
 }

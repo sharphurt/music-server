@@ -1,15 +1,15 @@
-package ru.sharphurt.musicserver.locallibrary.dto;
+package ru.sharphurt.musicserver.library.dto;
 
 import java.util.List;
 
-public record AlbumDto(
+public record ArtistDto(
     long iTunesId,
     String title,
     List<String> genres,
     List<String> imageUrls,
     String downloadUrl,
     String mbid,
-    String authorName
+    Integer listeners
 ) {
 
 }

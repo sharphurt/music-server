@@ -10,7 +10,9 @@ services:
             SLSKD_SECRET_API_KEY: ${SLSKD_SECRET_API_KEY}
             SLSKD_COMPLETE_DIR: ${SLSKD_COMPLETE_DIR}
             SLSKD_INCOMPLETE_DIR: ${SLSKD_INCOMPLETE_DIR}
+            SLSKD_APP_DIR: ${SLSKD_APP_DIR}
             SERVER_BASE_URL: ${SERVER_BASE_URL}
+            LIBRARY_BASE_DIR: ${LIBRARY_BASE_DIR}
             JAVA_OPTS: "-XX:+UseContainerSupport -XX:MaxRAMPercentage=75.0"
         depends_on:
             - postgres

@@ -5,7 +5,7 @@ import java.util.Comparator;
 import java.util.List;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
-import ru.sharphurt.musicserver.locallibrary.enitiy.TrackEntity;
+import ru.sharphurt.musicserver.library.enitiy.TrackEntity;
 import ru.sharphurt.musicserver.soulseek.dto.SlskFileNodeDto;
 import ru.sharphurt.musicserver.soulseek.dto.SlskFileScoreDto;
 

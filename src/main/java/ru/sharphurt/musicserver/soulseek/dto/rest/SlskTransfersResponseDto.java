@@ -2,7 +2,7 @@ package ru.sharphurt.musicserver.soulseek.dto.rest;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import lombok.Data;
-import ru.sharphurt.musicserver.soulseek.dto.SlskFileTransferDto;
+import ru.sharphurt.musicserver.soulseek.dto.SlskTransferDto;
 
 import java.util.List;
 
@@ -10,6 +10,6 @@ import java.util.List;
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class SlskTransfersResponseDto {
 
-    private List<SlskFileTransferDto> enqueued;
-    private List<SlskFileTransferDto> failed;
+    private List<SlskTransferDto> enqueued;
+    private List<SlskTransferDto> failed;
 }

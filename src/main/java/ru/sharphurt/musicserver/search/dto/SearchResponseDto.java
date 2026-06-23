@@ -1,6 +1,6 @@
 package ru.sharphurt.musicserver.search.dto;
 
-import ru.sharphurt.musicserver.locallibrary.dto.EntityType;
+import ru.sharphurt.musicserver.library.dto.EntityType;
 
 import java.util.List;
 

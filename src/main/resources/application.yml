@@ -28,6 +28,10 @@ slskd:
     api-key: ${SLSKD_SECRET_API_KEY:SuperSecretKey123456789!}
     complete-dir: ${SLSKD_COMPLETE_DIR:/home/username/music/downloads}
     incomplete-dir: ${SLSKD_INCOMPLETE_DIR:/home/username/music/incomplete}
+    app-dir: ${SLSKD_APP_DIR:/home/username/slskd}
+
+library:
+    base-dir: ${LIBRARY_BASE_DIR:/home/username/music/library}
 
 server-base-url: ${SERVER_BASE_URL:http://localhost:8080}
 

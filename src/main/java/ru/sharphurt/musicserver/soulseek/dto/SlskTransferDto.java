@@ -10,7 +10,7 @@ import tools.jackson.databind.annotation.JsonDeserialize;
 
 @Data
 @JsonIgnoreProperties(ignoreUnknown = true)
-public class SlskFileTransferDto {
+public class SlskTransferDto {
 
     private String id;
     private String username;

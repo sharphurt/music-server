@@ -4,7 +4,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import ru.sharphurt.musicserver.async.AsyncExecutor;
-import ru.sharphurt.musicserver.locallibrary.enitiy.TrackEntity;
+import ru.sharphurt.musicserver.library.enitiy.TrackEntity;
 import ru.sharphurt.musicserver.itunes.dto.ITunesTrackDto;
 import ru.sharphurt.musicserver.itunes.service.ITunesRestService;
 

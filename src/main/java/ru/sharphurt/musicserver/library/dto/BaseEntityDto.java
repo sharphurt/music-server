@@ -1,4 +1,4 @@
-package ru.sharphurt.musicserver.locallibrary.dto;
+package ru.sharphurt.musicserver.library.dto;
 
 import java.util.List;
 
