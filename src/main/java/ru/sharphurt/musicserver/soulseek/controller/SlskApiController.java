@@ -23,14 +23,18 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.mvc.method.annotation.StreamingResponseBody;
+import ru.sharphurt.musicserver.library.enitiy.TrackEntity;
+import ru.sharphurt.musicserver.library.enitiy.TrackFileStatus;
+import ru.sharphurt.musicserver.library.service.TrackDataService;
 import ru.sharphurt.musicserver.soulseek.dto.SlskFileScoreDto;
 import ru.sharphurt.musicserver.soulseek.dto.SlskTransferDto;
 import ru.sharphurt.musicserver.soulseek.dto.rest.SlskDownloadRequestDto;
 import ru.sharphurt.musicserver.soulseek.dto.rest.SlskDownloadResponseDto;
+import ru.sharphurt.musicserver.soulseek.dto.rest.SlskSearchResponseDto;
 import ru.sharphurt.musicserver.soulseek.entity.SlskDownloadEntity;
 import ru.sharphurt.musicserver.soulseek.entity.SlskSearchTaskEntity;
-import ru.sharphurt.musicserver.soulseek.service.SlskSearchService;
 import ru.sharphurt.musicserver.soulseek.service.SlskDownloadService;
+import ru.sharphurt.musicserver.soulseek.service.SlskSearchService;
 import ru.sharphurt.musicserver.user.repository.UserRepository;
 
 @Slf4j
@@ -45,6 +49,8 @@ public class SlskApiController {
 
     private final UserRepository userRepository;
 
+    private final TrackDataService trackDataService;
+
     @Value("${slskd.complete-dir}")
     private String downloadsDir;
 
@@ -52,9 +58,24 @@ public class SlskApiController {
     private String incompleteDir;
 
     @PostMapping("/search")
-    public ResponseEntity<List<SlskSearchTaskEntity>> createSearchTask(@RequestParam Long trackId) {
-        List<SlskSearchTaskEntity> searchTasks = searchService.initiateSearch(trackId);
-        return ResponseEntity.ok(searchTasks);
+    public ResponseEntity<SlskSearchResponseDto> createSearchTask(@RequestParam Long trackId) {
+        TrackEntity trackData = trackDataService.getTrackData(trackId);
+        if (trackData == null) {
+            log.error("Не известный TrackId = {}", trackId);
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
+
+        SlskSearchResponseDto responseDto = SlskSearchResponseDto.builder()
+            .trackData(trackData)
+            .build();
+
+        if (trackData.getTrackStatus() == TrackFileStatus.NOT_DOWNLOADED) {
+            List<SlskSearchTaskEntity> searchTasks = searchService.initiateSearch(trackId);
+            responseDto.setCreatedTasks(searchTasks);
+            return ResponseEntity.ok(responseDto);
+        }
+
+        return ResponseEntity.ok(responseDto);
     }
 
     @GetMapping("/search/results")
@@ -77,7 +98,8 @@ public class SlskApiController {
 
     @GetMapping("/download/list")
     public ResponseEntity<List<SlskDownloadResponseDto>> getDownloads() {
-        List<SlskDownloadResponseDto> downloads = downloadService.getDownloads(userRepository.getReferenceById(1L));
+        List<SlskDownloadResponseDto> downloads = downloadService.getDownloads(
+            userRepository.getReferenceById(1L));
         if (downloads == null || downloads.isEmpty()) {
             return ResponseEntity.ok(List.of());
         }
@@ -93,7 +115,8 @@ public class SlskApiController {
 
         log.info("Requested stream: downloadUuid: {}, rangeHeader: {}", downloadUuid, rangeHeader);
         //TODO add auth
-        SlskTransferDto task = downloadService.getDownloadInfo(downloadUuid, userRepository.getReferenceById(1L));
+        SlskTransferDto task = downloadService.getDownloadInfo(downloadUuid,
+            userRepository.getReferenceById(1L));
         if (task == null) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
         }

@@ -9,7 +9,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import ru.sharphurt.musicserver.library.dto.rest.AddToLibraryRequestDto;
 import ru.sharphurt.musicserver.library.enitiy.AddToLibraryResult;
-import ru.sharphurt.musicserver.library.service.LibraryService;
+import ru.sharphurt.musicserver.library.service.LibraryManagementService;
 import ru.sharphurt.musicserver.user.repository.UserRepository;
 
 @RestController
@@ -17,13 +17,13 @@ import ru.sharphurt.musicserver.user.repository.UserRepository;
 @RequestMapping("/api/library")
 public class LibraryController {
 
-    private final LibraryService libraryService;
+    private final LibraryManagementService libraryManagementService;
     private final UserRepository userRepository;
 
     @PostMapping("/add")
     public ResponseEntity<?> addToLibrary(@RequestBody AddToLibraryRequestDto dto) {
         // TODO: auth
-        AddToLibraryResult result = libraryService.addToLibrary(dto.getDownloadUuid(),
+        AddToLibraryResult result = libraryManagementService.addToLibrary(dto.getDownloadUuid(),
             userRepository.getReferenceById(1L));
         return switch (result) {
             case ALREADY_IN_LIBRARY -> ResponseEntity.status(HttpStatus.NOT_MODIFIED).build();

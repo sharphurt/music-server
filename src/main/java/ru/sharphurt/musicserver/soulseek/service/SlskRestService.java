@@ -83,7 +83,7 @@ public class SlskRestService {
         }
     }
 
-    public Optional<SlskSearchResultDto>  getSearchResult(UUID uuid) {
+    public Optional<SlskSearchResultDto> getSearchResult(UUID uuid) {
         try {
             SlskSearchResultDto slskSearchResultDto = restClient.get()
                 .uri("/api/v0/searches/{id}?includeResponses=true", uuid)

@@ -18,10 +18,10 @@ import ru.sharphurt.musicserver.user.entity.UserEntity;
 @Slf4j
 @Service
 @RequiredArgsConstructor
-public class LibraryService {
+public class LibraryManagementService {
 
     private final SlskDownloadRepository downloadRepository;
-    private final LibraryFileMoveService libraryFileMoveService;
+    private final LibraryFileService libraryFileService;
     private final SlskDownloadService slskDownloadService;
 
     @Transactional
@@ -38,10 +38,10 @@ public class LibraryService {
                 Path file = Path.of(download.getLocalFilename());
                 if (Files.exists(file)) {
                     download.setDownloadIntent(DownloadIntent.ADD);
-                    libraryFileMoveService.moveToLibrary(download);
+                    libraryFileService.moveToLibrary(download);
                     yield AddToLibraryResult.MOVED;
                 } else {
-                    yield requeueAsync(download);
+                    yield requeue(download);
                 }
             }
 
@@ -51,11 +51,11 @@ public class LibraryService {
                 yield AddToLibraryResult.REQUEUED;
             }
 
-            case FAILED -> requeueAsync(download);
+            case FAILED -> requeue(download);
         };
     }
 
-    private AddToLibraryResult requeueAsync(SlskDownloadEntity download) {
+    private AddToLibraryResult requeue(SlskDownloadEntity download) {
         download.setDownloadStatus(DownloadStatus.QUEUED);
         download.setDownloadIntent(DownloadIntent.ADD);
         downloadRepository.save(download);

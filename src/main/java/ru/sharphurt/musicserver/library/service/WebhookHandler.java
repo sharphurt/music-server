@@ -17,7 +17,7 @@ import ru.sharphurt.musicserver.soulseek.repository.SlskDownloadRepository;
 public class WebhookHandler {
 
     private final SlskDownloadRepository downloadRepository;
-    private final LibraryFileMoveService fileMoveService;
+    private final LibraryFileService fileMoveService;
 
     @Transactional
     public void onDownloadComplete(SlskDownloadCompleteDto event) {

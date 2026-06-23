@@ -9,10 +9,8 @@ import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
-import ru.sharphurt.musicserver.itunes.service.ITunesSearchService;
 import ru.sharphurt.musicserver.library.enitiy.TrackEntity;
-import ru.sharphurt.musicserver.library.enitiy.TrackFileStatus;
-import ru.sharphurt.musicserver.library.repository.TrackRepository;
+import ru.sharphurt.musicserver.library.service.TrackDataService;
 import ru.sharphurt.musicserver.soulseek.dto.SlskTransferDto;
 import ru.sharphurt.musicserver.soulseek.dto.rest.SlskDownloadRequestDto;
 import ru.sharphurt.musicserver.soulseek.dto.rest.SlskDownloadResponseDto;
@@ -31,8 +29,7 @@ public class SlskDownloadService {
 
     private final SlskRestService restService;
     private final SlskDownloadRepository slskDownloadRepository;
-    private final TrackRepository trackRepository;
-    private final ITunesSearchService itunesSearchService;
+    private final TrackDataService trackDataService;
     private final UserRepository userRepository;
 
     @Transactional
@@ -79,7 +76,7 @@ public class SlskDownloadService {
             return null;
         }
 
-        TrackEntity track = getTrackFromDbOrItunes(dto.getTrackId());
+        TrackEntity track = trackDataService.getTrackData(dto.getTrackId());
         if (track == null) {
             log.error("Трек не найден ни в БД ни в ITunes. DownloadRequestDto: {}",
                 dto);
@@ -123,24 +120,6 @@ public class SlskDownloadService {
         }
 
         return true;
-    }
-
-    private TrackEntity getTrackFromDbOrItunes(long trackId) {
-        TrackEntity track = trackRepository.findByiTunesId(trackId);
-        if (track != null) {
-            return track;
-        }
-
-        log.error("Для запрошенного трека {} не найдено данных. Загружаем из ITunes", trackId);
-        track = itunesSearchService.searchTrackById(trackId);
-
-        if (track != null) {
-            track.setTrackStatus(TrackFileStatus.NOT_DOWNLOADED);
-            return trackRepository.save(track);
-        }
-
-        log.error("Трека с id {} не найдено", trackId);
-        return null;
     }
 
     public List<SlskDownloadResponseDto> getDownloads(UserEntity user) {

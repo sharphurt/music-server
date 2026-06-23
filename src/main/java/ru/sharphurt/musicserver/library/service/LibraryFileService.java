@@ -19,7 +19,7 @@ import ru.sharphurt.musicserver.soulseek.repository.SlskDownloadRepository;
 @Slf4j
 @Service
 @RequiredArgsConstructor
-public class LibraryFileMoveService {
+public class LibraryFileService {
 
     @Value("${library.base-dir}")
     private String libraryRoot;
@@ -28,6 +28,7 @@ public class LibraryFileMoveService {
     private String soulseekAppDir;
 
     private final SlskDownloadRepository downloadRepository;
+
     private final TrackRepository trackRepository;
 
     @Transactional
