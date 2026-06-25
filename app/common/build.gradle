@@ -6,19 +6,10 @@ dependencies {
     api 'org.springframework.boot:spring-boot-starter-web'
     api 'org.springframework.boot:spring-boot-starter-data-jpa'
     api 'org.springframework.boot:spring-boot-starter-data-jdbc'
-    api 'org.springframework.boot:spring-boot-starter-webflux'
-    api 'org.springframework.boot:spring-boot-starter-cache'
     api 'org.springframework.boot:spring-boot-starter-liquibase'
 
     implementation 'com.fasterxml.jackson.core:jackson-databind'
-    implementation 'de.u-mass:lastfm-java:0.1.2'
-    implementation 'com.ibm.icu:icu4j:78.3'
-    implementation 'com.github.ben-manes.caffeine:caffeine'
 
     compileOnly 'org.projectlombok:lombok'
     annotationProcessor 'org.projectlombok:lombok'
-
-    runtimeOnly 'org.postgresql:postgresql'
-
-    testImplementation 'org.springframework.boot:spring-boot-starter-test'
 }

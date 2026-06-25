@@ -38,9 +38,7 @@ public class SlskScoringService {
         String basename = filename.substring(
             Math.max(filename.lastIndexOf('/'), filename.lastIndexOf('\\')) + 1);
 
-        boolean titleMatched = dbTrack.getTitleAliases().stream()
-            .map(String::toLowerCase)
-            .anyMatch(basename::contains);
+        boolean titleMatched = basename.toLowerCase().contains(dbTrack.getTitle().toLowerCase());
 
         if (!titleMatched) {
             return new SlskFileScoreDto(fileNodeDto, 0.0);

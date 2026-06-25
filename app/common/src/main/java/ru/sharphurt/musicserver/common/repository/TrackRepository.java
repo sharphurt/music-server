@@ -7,5 +7,4 @@ import ru.sharphurt.musicserver.common.entity.TrackEntity;
 @Repository
 public interface TrackRepository extends JpaRepository<TrackEntity, Long> {
 
-    TrackEntity findByiTunesId(long id);
 }

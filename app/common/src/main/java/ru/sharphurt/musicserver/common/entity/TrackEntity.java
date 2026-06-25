@@ -29,13 +29,21 @@ public class TrackEntity {
 
     @Id
     @Column(name = "itunes_id")
-    private Long iTunesId;
+    private long iTunesId;
 
-    @Column(name = "artist_id")
-    private Long artistId;
+    @ManyToOne
+    @JoinColumn(name = "artist_id")
+    private ArtistEntity artist;
 
-    @Column(name = "album_id")
-    private Long albumId;
+    @Column(name = "artist_id", updatable = false, insertable = false)
+    private long artistId;
+
+    @ManyToOne
+    @JoinColumn(name = "album_id")
+    private AlbumEntity album;
+
+    @Column(name = "album_id", updatable = false, insertable = false)
+    private long albumId;
 
     @Column(name = "title")
     private String title;
@@ -100,7 +108,8 @@ public class TrackEntity {
 
     @Column(name = "track_status")
     @Enumerated(EnumType.STRING)
-    private TrackFileStatus trackStatus;
+    @Builder.Default
+    private TrackFileStatus trackStatus = TrackFileStatus.NOT_DOWNLOADED;
 
     @Column(name = "full_path")
     private String fullPath;

@@ -1,7 +1,10 @@
 package ru.sharphurt.musicserver.mediametadata.search;
 
 
+import java.util.List;
+import org.apache.commons.lang3.tuple.Pair;
 import ru.sharphurt.musicserver.common.entity.AlbumEntity;
+import ru.sharphurt.musicserver.common.entity.ArtistEntity;
 import ru.sharphurt.musicserver.common.entity.TrackEntity;
 
 public interface SearchProvider {
@@ -10,5 +13,7 @@ public interface SearchProvider {
 
     TrackEntity searchTrackById(long id);
 
-    AlbumEntity searchAlbumById(long id);
+    Pair<AlbumEntity, List<TrackEntity>> searchAlbumWithTracksById(long id);
+
+    ArtistEntity searchArtistById(long id);
 }

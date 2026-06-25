@@ -26,9 +26,9 @@ spring:
 slskd:
     url: ${SLSKD_BASE_URL:http://localhost:5030}
     api-key: ${SLSKD_SECRET_API_KEY:SuperSecretKey123456789!}
-    complete-dir: ${SLSKD_COMPLETE_DIR:/home/username/music/downloads}
-    incomplete-dir: ${SLSKD_INCOMPLETE_DIR:/home/username/music/incomplete}
     host-base-path: ${SLSKD_APP_DIR:/home/username/slskd}
+#    complete-dir: ${SLSKD_COMPLETE_DIR:/home/username/music/downloads}
+#    incomplete-dir: ${SLSKD_INCOMPLETE_DIR:/home/username/music/incomplete}
 
 library:
     base-dir: ${LIBRARY_BASE_DIR:/home/username/music/library}

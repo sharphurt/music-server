@@ -1,11 +1,12 @@
-package ru.sharphurt.musicserver.mediametadata.itunes.service;
+package ru.sharphurt.musicserver.mediametadata.itunes;
 
 import lombok.Getter;
 
 @Getter
 public enum ITunesEntityType {
-    SONG("song");
-
+    SONG("song"),
+    ALBUM("collection"),
+    ARTIST("musicArtist");
 
     private final String apiName;
 

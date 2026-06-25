@@ -4,22 +4,19 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 import java.util.Optional;
 import java.util.UUID;
-import java.util.stream.Stream;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import ru.sharphurt.musicserver.common.entity.SlskSearchTaskEntity;
 import ru.sharphurt.musicserver.common.entity.TrackEntity;
-import ru.sharphurt.musicserver.mediametadata.MediaMetadataService;
+import ru.sharphurt.musicserver.common.repository.SlskSearchTaskRepository;
+import ru.sharphurt.musicserver.mediametadata.db.MetadataService;
 import ru.sharphurt.musicserver.soulseek.dto.SlskFileNodeDto;
 import ru.sharphurt.musicserver.soulseek.dto.SlskFileScoreDto;
 import ru.sharphurt.musicserver.soulseek.dto.SlskPeerResponseDto;
 import ru.sharphurt.musicserver.soulseek.dto.SlskSearchResultDto;
-import ru.sharphurt.musicserver.common.entity.SlskSearchTaskEntity;
-import ru.sharphurt.musicserver.common.repository.SlskSearchTaskRepository;
-import ru.sharphurt.musicserver.soulseek.util.DataClearingUtils;
 
 @Slf4j
 @Service
@@ -29,27 +26,33 @@ public class SlskSearchService {
     private final SlskRestService restService;
     private final SlskScoringService scoringService;
     private final SlskSearchTaskRepository slskSearchTaskRepository;
-    private final MediaMetadataService mediaMetadataService;
+    private final MetadataService mediaMetadataService;
 
 
     public List<SlskSearchTaskEntity> initiateSearch(long trackId) {
-        TrackEntity trackDto = mediaMetadataService.getTrackData(trackId);
+        TrackEntity trackDto = mediaMetadataService.findOrFetchTrack(trackId);
         List<SlskSearchTaskEntity> alreadyCreatedTasks = slskSearchTaskRepository.findAllByTrackIdAndDisabledFalse(
             trackId);
 
-        List<SlskSearchTaskEntity> searchTasks = trackDto.getTitleAliases()
-            .stream()
-            .map(e -> DataClearingUtils.normalizeString(e).toLowerCase()).filter(e -> !e.isEmpty())
-            .distinct()
-            .filter(query -> alreadyCreatedTasks.stream()
-                .noneMatch(act -> act.getQuery().equalsIgnoreCase(query)))
-            .map(query -> createSearchTask(trackDto, query))
-            .filter(Objects::nonNull)
-            .toList();
+        if (alreadyCreatedTasks.stream().anyMatch(e -> e.getQuery().equalsIgnoreCase(trackDto.getTitle()))) {
+            log.info("Задача на поиск уже существует");
+            return alreadyCreatedTasks;
+        }
 
-        slskSearchTaskRepository.saveAll(searchTasks);
+        SlskSearchTaskEntity searchTask = createSearchTask(trackDto, trackDto.getTitle());
+//        List<SlskSearchTaskEntity> searchTasks = trackDto.getTitleAliases()
+//            .stream()
+//            .map(e -> DataClearingUtils.normalizeString(e).toLowerCase()).filter(e -> !e.isEmpty())
+//            .distinct()
+//            .filter(query -> alreadyCreatedTasks.stream()
+//                .noneMatch(act -> act.getQuery().equalsIgnoreCase(query)))
+//            .map(query -> createSearchTask(trackDto, query))
+//            .filter(Objects::nonNull)
+//            .toList();
 
-        return Stream.of(searchTasks, alreadyCreatedTasks).flatMap(List::stream).toList();
+        slskSearchTaskRepository.save(searchTask);
+
+        return List.of(searchTask);
     }
 
     public SlskSearchTaskEntity createSearchTask(TrackEntity trackDto, String query) {
@@ -68,7 +71,7 @@ public class SlskSearchService {
     }
 
     public List<SlskFileScoreDto> fetchSearchResults(long trackId, int maxResults) {
-        TrackEntity trackDto = mediaMetadataService.getTrackData(trackId);
+        TrackEntity trackDto = mediaMetadataService.findOrFetchTrack(trackId);
         List<SlskFileNodeDto> filesData = collectFiles(trackId);
 
         return scoringService.matchAndSort(trackDto, filesData).stream().limit(maxResults).toList();

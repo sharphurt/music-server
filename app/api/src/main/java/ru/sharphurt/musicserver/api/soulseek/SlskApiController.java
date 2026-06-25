@@ -29,7 +29,7 @@ import ru.sharphurt.musicserver.common.entity.TrackFileStatus;
 import ru.sharphurt.musicserver.soulseek.dto.SlskDownloadRequestDto;
 import ru.sharphurt.musicserver.soulseek.dto.SlskDownloadResponseDto;
 import ru.sharphurt.musicserver.api.soulseek.dto.SlskSearchResponseDto;
-import ru.sharphurt.musicserver.mediametadata.MediaMetadataService;
+import ru.sharphurt.musicserver.mediametadata.db.MetadataService;
 import ru.sharphurt.musicserver.soulseek.dto.SlskFileScoreDto;
 import ru.sharphurt.musicserver.common.entity.SlskDownloadEntity;
 import ru.sharphurt.musicserver.common.entity.SlskSearchTaskEntity;
@@ -49,7 +49,7 @@ public class SlskApiController {
 
     private final UserRepository userRepository;
 
-    private final MediaMetadataService mediaMetadataService;
+    private final MetadataService mediaMetadataService;
 
     @Value("${slskd.internal-base-path:/app}")
     private String slskdInternalBasePath;
@@ -59,7 +59,7 @@ public class SlskApiController {
 
     @PostMapping("/search")
     public ResponseEntity<SlskSearchResponseDto> createSearchTask(@RequestParam Long trackId) {
-        TrackEntity trackData = mediaMetadataService.getTrackData(trackId);
+        TrackEntity trackData = mediaMetadataService.findOrFetchTrack(trackId);
 
         if (trackData == null) {
             log.error("Не известный TrackId = {}", trackId);

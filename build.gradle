@@ -23,6 +23,7 @@ dependencies {
     implementation project(':app:soulseek')
     implementation project(':app:user')
 
+    implementation 'org.springframework.boot:spring-boot-starter-liquibase'
     implementation 'org.springframework.boot:spring-boot-starter'
 }
 

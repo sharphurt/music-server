@@ -3,38 +3,26 @@ package ru.sharphurt.musicserver.mediametadata.itunes.dto;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import lombok.Getter;
 import lombok.Setter;
-
 import java.time.ZonedDateTime;
 
 @Getter
 @Setter
 @JsonIgnoreProperties(ignoreUnknown = true)
-public class ITunesTrackDto extends ITunesResultDto {
-    private long trackId;
-    private long collectionId;
-    private String kind;
-    private String trackName;
-    private String trackCensoredName;
+public class ITunesCollectionDto extends ITunesResultDto {
+
+    private String collectionType;
+    private Long collectionId;
     private String collectionName;
     private String collectionCensoredName;
     private String collectionViewUrl;
-    private String trackViewUrl;
-    private String previewUrl;
-    private String artworkUrl30;
     private String artworkUrl60;
     private String artworkUrl100;
     private double collectionPrice;
-    private double trackPrice;
-    private ZonedDateTime releaseDate;
     private String collectionExplicitness;
-    private String trackExplicitness;
     private String contentAdvisoryRating;
-    private Integer discCount;
-    private Integer discNumber;
     private Integer trackCount;
-    private Integer trackNumber;
-    private Long trackTimeMillis;
+    private String copyright;
     private String country;
     private String currency;
-    private Boolean isStreamable;
+    private ZonedDateTime releaseDate;
 }

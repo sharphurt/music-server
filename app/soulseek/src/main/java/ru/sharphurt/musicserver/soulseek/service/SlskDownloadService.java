@@ -9,20 +9,19 @@ import java.util.Optional;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
-import ru.sharphurt.musicserver.common.entity.TrackEntity;
-import ru.sharphurt.musicserver.mediametadata.MediaMetadataService;
-import ru.sharphurt.musicserver.soulseek.dto.SlskDownloadResponseDto;
-import ru.sharphurt.musicserver.soulseek.dto.SlskTransferDto;
-import ru.sharphurt.musicserver.soulseek.dto.SlskTransfersResponseDto;
 import ru.sharphurt.musicserver.common.entity.DownloadIntent;
 import ru.sharphurt.musicserver.common.entity.DownloadStatus;
 import ru.sharphurt.musicserver.common.entity.SlskDownloadEntity;
-import ru.sharphurt.musicserver.soulseek.mapper.SlskDownloadDtoMapper;
-import ru.sharphurt.musicserver.common.repository.SlskDownloadRepository;
+import ru.sharphurt.musicserver.common.entity.TrackEntity;
 import ru.sharphurt.musicserver.common.entity.UserEntity;
+import ru.sharphurt.musicserver.common.repository.SlskDownloadRepository;
 import ru.sharphurt.musicserver.common.repository.UserRepository;
+import ru.sharphurt.musicserver.mediametadata.db.MetadataService;
+import ru.sharphurt.musicserver.soulseek.dto.SlskDownloadResponseDto;
+import ru.sharphurt.musicserver.soulseek.dto.SlskTransferDto;
+import ru.sharphurt.musicserver.soulseek.dto.SlskTransfersResponseDto;
+import ru.sharphurt.musicserver.soulseek.mapper.SlskDownloadDtoMapper;
 
 @Slf4j
 @Service
@@ -31,12 +30,9 @@ public class SlskDownloadService {
 
     private final SlskRestService restService;
     private final SlskDownloadRepository slskDownloadRepository;
-    private final MediaMetadataService mediaMetadataService;
+    private final MetadataService mediaMetadataService;
     private final UserRepository userRepository;
     private final SlskDownloadDtoMapper mapper;
-
-    @Value("${slskd.incomplete-dir}")
-    private String incompleteDir;
 
     @Transactional
     public SlskDownloadEntity enqueueDownload(long trackId, String filename, String username, long size, DownloadIntent intent) {
@@ -69,10 +65,7 @@ public class SlskDownloadService {
             return null;
         }
 
-        TrackEntity track = mediaMetadataService.getTrackData(trackId);
-        if (track == null) {
-            return null;
-        }
+        TrackEntity track = mediaMetadataService.findOrFetchTrack(trackId);
 
         // TODO: решить красиво проблему резолва путей
         Path relativeFilename = parseRelativePath(filename);
