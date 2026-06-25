@@ -1,1 +1,8 @@
 rootProject.name = 'music-server'
+
+include 'app:mediametadata'
+include 'app:musicserver'
+include 'app:common'
+include 'app:api'
+include 'app:soulseek'
+include 'app:user'
