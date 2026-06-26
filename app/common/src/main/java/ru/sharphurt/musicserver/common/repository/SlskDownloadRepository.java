@@ -36,6 +36,7 @@ public interface SlskDownloadRepository extends JpaRepository<SlskDownloadEntity
     @Query("""
         select download from SlskDownloadEntity download
         where download.downloadStatus in (ru.sharphurt.musicserver.common.entity.DownloadStatus.FAILED, ru.sharphurt.musicserver.common.entity.DownloadStatus.QUEUED)
+        and download.localFilename is not null
         and download.requestedAt < :thresholdDate
         """)
     List<SlskDownloadEntity> findAllFailedLegacy(LocalDateTime thresholdDate);
