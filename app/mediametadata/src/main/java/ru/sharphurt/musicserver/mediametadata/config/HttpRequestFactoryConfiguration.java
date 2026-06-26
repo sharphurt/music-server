@@ -1,4 +1,4 @@
-package ru.sharphurt.musicserver.config;
+package ru.sharphurt.musicserver.mediametadata.config;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

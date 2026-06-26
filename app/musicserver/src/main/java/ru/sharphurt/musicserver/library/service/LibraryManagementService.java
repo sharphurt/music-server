@@ -7,6 +7,7 @@ import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import ru.sharphurt.musicserver.common.PathResolver;
 import ru.sharphurt.musicserver.common.entity.DownloadIntent;
 import ru.sharphurt.musicserver.common.entity.DownloadStatus;
 import ru.sharphurt.musicserver.common.entity.SlskDownloadEntity;
@@ -26,34 +27,39 @@ public class LibraryManagementService {
 
     private final SlskDownloadService slskDownloadService;
 
+    private final PathResolver pathResolver;
+
     @Transactional
     public AddToLibraryResult addToLibrary(UUID downloadUuid, UserEntity user) {
-        SlskDownloadEntity download = downloadRepository.findByUserAndUuid(user, downloadUuid);
-        if (download == null) {
+        SlskDownloadEntity downloadInfo = downloadRepository.findByUserAndUuid(user, downloadUuid);
+        if (downloadInfo == null) {
             return AddToLibraryResult.NOT_FOUND;
         }
 
-        return switch (download.getDownloadStatus()) {
+        return switch (downloadInfo.getDownloadStatus()) {
             case IN_LIBRARY -> AddToLibraryResult.ALREADY_IN_LIBRARY;
 
             case COMPLETED -> {
-                Path file = Path.of(download.getLocalFilename());
-                if (Files.exists(file)) {
-                    download.setDownloadIntent(DownloadIntent.ADD);
-                    libraryFileService.moveToLibrary(download);
+                Path resolvedPath = pathResolver.resolveTempFullPath(downloadInfo);
+                if (Files.exists(resolvedPath)) {
+                    log.info("Перенос трека {} в библиотеку", resolvedPath);
+
+                    downloadInfo.setDownloadIntent(DownloadIntent.ADD);
+                    libraryFileService.copyToLibrary(downloadInfo);
                     yield AddToLibraryResult.MOVED;
                 } else {
-                    yield requeue(download);
+                    log.info("Файл {} не найден во временном хранилище. Будет загружен заново", resolvedPath);
+                    yield requeue(downloadInfo);
                 }
             }
 
             case MOVING, QUEUED -> {
-                download.setDownloadIntent(DownloadIntent.ADD);
-                downloadRepository.save(download);
+                downloadInfo.setDownloadIntent(DownloadIntent.ADD);
+                downloadRepository.save(downloadInfo);
                 yield AddToLibraryResult.REQUEUED;
             }
 
-            case FAILED -> requeue(download);
+            case FAILED -> requeue(downloadInfo);
         };
     }
 

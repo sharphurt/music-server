@@ -5,13 +5,10 @@ import java.io.File;
 import java.io.RandomAccessFile;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.List;
 import java.util.UUID;
-import java.util.regex.Pattern;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -24,18 +21,19 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.mvc.method.annotation.StreamingResponseBody;
-import ru.sharphurt.musicserver.common.entity.TrackEntity;
-import ru.sharphurt.musicserver.common.entity.TrackFileStatus;
-import ru.sharphurt.musicserver.soulseek.dto.SlskDownloadRequestDto;
-import ru.sharphurt.musicserver.soulseek.dto.SlskDownloadResponseDto;
 import ru.sharphurt.musicserver.api.soulseek.dto.SlskSearchResponseDto;
-import ru.sharphurt.musicserver.mediametadata.db.MetadataService;
-import ru.sharphurt.musicserver.soulseek.dto.SlskFileScoreDto;
+import ru.sharphurt.musicserver.common.PathResolver;
 import ru.sharphurt.musicserver.common.entity.SlskDownloadEntity;
 import ru.sharphurt.musicserver.common.entity.SlskSearchTaskEntity;
+import ru.sharphurt.musicserver.common.entity.TrackEntity;
+import ru.sharphurt.musicserver.common.entity.TrackFileStatus;
+import ru.sharphurt.musicserver.common.repository.UserRepository;
+import ru.sharphurt.musicserver.mediametadata.db.MetadataService;
+import ru.sharphurt.musicserver.soulseek.dto.SlskDownloadRequestDto;
+import ru.sharphurt.musicserver.soulseek.dto.SlskDownloadResponseDto;
+import ru.sharphurt.musicserver.soulseek.dto.SlskFileScoreDto;
 import ru.sharphurt.musicserver.soulseek.service.SlskDownloadService;
 import ru.sharphurt.musicserver.soulseek.service.SlskSearchService;
-import ru.sharphurt.musicserver.common.repository.UserRepository;
 
 @Slf4j
 @RestController
@@ -51,11 +49,7 @@ public class SlskApiController {
 
     private final MetadataService mediaMetadataService;
 
-    @Value("${slskd.internal-base-path:/app}")
-    private String slskdInternalBasePath;
-
-    @Value("${slskd.host-base-path}")
-    private String slskdHostBasePath;
+    private final PathResolver pathResolver;
 
     @PostMapping("/search")
     public ResponseEntity<SlskSearchResponseDto> createSearchTask(@RequestParam Long trackId) {
@@ -129,7 +123,7 @@ public class SlskApiController {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
         }
 
-        Path resolvedPath = resolveHostPath(downloadInfo.getLocalFilename());
+        Path resolvedPath = pathResolver.resolveTempFullPath(downloadInfo);
         log.info("Resolved path: {}", resolvedPath);
 
         if (!Files.exists(resolvedPath)) {
@@ -188,11 +182,6 @@ public class SlskApiController {
             audioFile);
 
         return new ResponseEntity<>(responseBody, headers, HttpStatus.PARTIAL_CONTENT);
-    }
-
-    public Path resolveHostPath(String slskdPath) {
-        String relative = slskdPath.replaceFirst("^" + Pattern.quote(slskdInternalBasePath), "");
-        return Paths.get(slskdHostBasePath, relative);
     }
 
     private static StreamingResponseBody getStreamingResponseBody(

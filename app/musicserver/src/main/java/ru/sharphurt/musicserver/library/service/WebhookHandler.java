@@ -33,7 +33,8 @@ public class WebhookHandler {
         download = downloadRepository.save(download);
 
         if (download.getDownloadIntent() == DownloadIntent.ADD) {
-            fileMoveService.moveToLibrary(download);
+            log.info("Перенос трека {} в библиотеку", localFilename);
+            fileMoveService.copyToLibrary(download);
         }
     }
 }

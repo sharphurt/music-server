@@ -71,6 +71,11 @@ public class SlskSearchService {
     }
 
     public List<SlskFileScoreDto> fetchSearchResults(long trackId, int maxResults) {
+        if (slskSearchTaskRepository.findAllByTrackIdAndDisabledFalse(trackId).isEmpty()) {
+            log.info("Задач на поиск трека id={} пока не существует", trackId);
+            return List.of();
+        }
+
         TrackEntity trackDto = mediaMetadataService.findOrFetchTrack(trackId);
         List<SlskFileNodeDto> filesData = collectFiles(trackId);
 

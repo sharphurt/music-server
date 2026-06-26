@@ -1,4 +1,4 @@
-package ru.sharphurt.musicserver.config;
+package ru.sharphurt.musicserver.mediametadata.config;
 
 import com.github.benmanes.caffeine.cache.Caffeine;
 import java.util.List;

@@ -71,4 +71,10 @@ public class SlskDownloadEntity {
 
     @Column(name = "slsk_filesize")
     private long slskFilesize;
+
+    @Column(name = "temp_cleaned")
+    private boolean tempCleaned;
+
+    @Column(name = "last_clean_error")
+    private String lastCleanErrorMessage;
 }

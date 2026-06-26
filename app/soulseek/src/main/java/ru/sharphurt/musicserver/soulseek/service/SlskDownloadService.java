@@ -2,7 +2,6 @@ package ru.sharphurt.musicserver.soulseek.service;
 
 import jakarta.transaction.Transactional;
 import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
@@ -10,6 +9,7 @@ import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import ru.sharphurt.musicserver.common.PathResolver;
 import ru.sharphurt.musicserver.common.entity.DownloadIntent;
 import ru.sharphurt.musicserver.common.entity.DownloadStatus;
 import ru.sharphurt.musicserver.common.entity.SlskDownloadEntity;
@@ -33,6 +33,7 @@ public class SlskDownloadService {
     private final MetadataService mediaMetadataService;
     private final UserRepository userRepository;
     private final SlskDownloadDtoMapper mapper;
+    private final PathResolver pathResolver;
 
     @Transactional
     public SlskDownloadEntity enqueueDownload(long trackId, String filename, String username, long size, DownloadIntent intent) {
@@ -67,10 +68,7 @@ public class SlskDownloadService {
 
         TrackEntity track = mediaMetadataService.findOrFetchTrack(trackId);
 
-        // TODO: решить красиво проблему резолва путей
-        Path relativeFilename = parseRelativePath(filename);
-        Path incompleteLocalPath = Paths.get("\\incomplete", relativeFilename.toString());
-
+        Path incompleteLocalPath = pathResolver.getIncompleteTempPath(filename);
         log.info("Incomplete local path: {}", incompleteLocalPath);
 
         SlskDownloadEntity entity = SlskDownloadEntity.builder()
@@ -147,18 +145,5 @@ public class SlskDownloadService {
         }
 
         return downloadEntity;
-    }
-
-    private Path parseRelativePath(String remoteFilename) {
-        String normalized = remoteFilename.replace("\\", "/");
-        String[] parts = normalized.split("/");
-
-        if (parts.length >= 2) {
-            String parentDir = parts[parts.length - 2];
-            String fileName = parts[parts.length - 1];
-            return Paths.get(parentDir, fileName);
-        }
-
-        return Paths.get(normalized);
     }
 }

@@ -1,8 +1,10 @@
 package ru.sharphurt.musicserver.common.repository;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 import ru.sharphurt.musicserver.common.entity.DownloadStatus;
 import ru.sharphurt.musicserver.common.entity.SlskDownloadEntity;
@@ -23,4 +25,18 @@ public interface SlskDownloadRepository extends JpaRepository<SlskDownloadEntity
         String slskFilename,
         List<DownloadStatus> excludedStatuses
     );
+
+    @Query("""
+        select download from SlskDownloadEntity download
+        where download.downloadStatus = ru.sharphurt.musicserver.common.entity.DownloadStatus.IN_LIBRARY
+        and download.localFilename is not null
+        """)
+    List<SlskDownloadEntity> findAllAddedToLibrary();
+
+    @Query("""
+        select download from SlskDownloadEntity download
+        where download.downloadStatus in (ru.sharphurt.musicserver.common.entity.DownloadStatus.FAILED, ru.sharphurt.musicserver.common.entity.DownloadStatus.QUEUED)
+        and download.requestedAt < :thresholdDate
+        """)
+    List<SlskDownloadEntity> findAllFailedLegacy(LocalDateTime thresholdDate);
 }
